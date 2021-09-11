@@ -1,0 +1,84 @@
+%! Author = ACA
+%! Date = 11-Sep-21
+
+% Preamble
+\documentclass[a4paper]{report}
+
+% Packages
+\usepackage{float}
+
+% Utilities
+\include{utils}
+\include{env_template}
+
+\makeatletter
+\renewcommand\listoftables{%
+        \@starttoc{lot}%
+}
+\makeatother
+
+\makeatletter
+\renewcommand\listoffigures{%
+        \@starttoc{lof}%
+}
+\makeatother
+
+\makeatletter
+\renewcommand\tableofcontents{%
+        \@starttoc{toc}%
+}
+\makeatother
+
+
+% Document
+\begin{document}
+
+    \level{0}{General considerations}
+    \level{1}{Table of contents}
+    \tableofcontents
+
+    \level{1}{Table of figures}
+    \listoffigures
+
+    \level{1}{Table of tables}
+    \listoftables
+
+    \level{1}{Project presentation}\label{project-presentation}
+    \blindtext[1]
+
+    See figure~\ref{fig:architecture-diagram}.
+
+    \begin{figure}[H]
+    \includegraphics{architecture.png}
+    \caption{Architecture diagram for SW.COMP1}
+    \centering\label{fig:architecture-diagram}
+    \end{figure}
+
+    \blindtext[1]
+
+    \level{0}{Functionnal requirements}
+
+    \level{1}{Input commands}
+
+    \blindtext[1]
+
+    \include{snip/SRD-REQ-00001}
+    Note: see \ref{project-presentation} for details about this command.
+
+    \level{1}{Performance}
+
+    \blindtext[1]
+
+
+    \level{0}{First level}
+
+    \blindtext[1]
+
+\begin{appendices}
+    \chapter{Tracability matrices}\label{ch:tracability-matrices}
+    Test test
+%    \include{snip/matrix_to_SP-PIDS}
+
+\end{appendices}
+
+\end{document}

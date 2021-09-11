@@ -1,0 +1,33 @@
+%! Author = ACA
+%! Date = 11-Sep-21
+
+% Packages
+\usepackage{hyperref}
+\usepackage{graphicx}
+
+\graphicspath{ {./media/} }
+
+% Hyperlinks in tables of content, figures, tables...
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+    linktoc=all,
+}
+
+\newenvironment{requirement}[1]
+    {
+        \begin{flushleft}
+            #1
+        \end{flushleft}
+        \begin{center}
+        \begin{tabular}{|p{0.9\textwidth}|}
+        \hline\\
+    }
+    {
+        \\\\\hline
+        \end{tabular}
+        \end{center}
+    }

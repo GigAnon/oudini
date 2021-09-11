@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Example SRD document for a fictional COMP1 component -->
+
+<document>
+    <general>
+        <project internal = "SP"
+                 pretty   = "Super Project 3000"/>
+        <title   internal = "SP-SRD-COMP1"
+                 pretty   = "SRD COMP1" />
+        <version internal = "A-pr1"
+                 pretty   = "A PR1" />
+
+        <description>Specification Requirement Document for software component COMP 1</description>
+
+        <author>Jean Bonbheur</author>
+        <author>A.N. O'Nymus</author>
+        <reviewer>Pierre Dangle</reviewer>
+
+        <reqDisplayFormat>SRD-REQ-{id:05d}</reqDisplayFormat>
+        <reqFileFormat>SRD-REQ-{id:05d}.tex</reqFileFormat>
+    </general>
+    <links>
+        <document internal = "SP-PIDS" source = "path/to/PIDS" />
+    </links>
+    <requirements>
+        <sec name = "input-commands">
+            <!-- Section for input commands -->
+
+            <sec name = "read-sw-version-command">
+                <!-- Section for the READ_SW_VERSION command -->
+
+                <req id        = "00001"
+                     shortDesc = "Treatment of command READ_SW_VERSION">
+                    <text>
+\begin{enumerate}
+    \item Check the command size
+    \item Check the command format, in order :
+        \begin{enumerate}
+            \item Field "CRC"
+            \item Field "Version"
+        \end{enumerate}
+    \item Log an event eCOMMAND_RECEIVED
+    \item Format a READ_SW_VERSION_ACK response with, in no particular order:
+        \begin{itemize}
+            \item The software version
+            \item The hardware version
+        \end{itemize}
+    \item Send the response
+    \item \blindtext[1]
+    \item Log an event eCOMMAND_SENT
+\end{enumerate}
+                    </text>
+                    <satisfies>
+                        <link id = "SP-PIDS-REQ-10000" source = "SP-PIDS" />
+                    </satisfies>
+                </req>
+
+                <req id        = "80000"
+                     shortdesc = "Placeholder"> </req>
+            </sec>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </sec>
+        <sec name = "performance">
+
+        </sec>
+        <sec name = "navigability">
+        </sec>
+    </requirements>
+
+</document>
