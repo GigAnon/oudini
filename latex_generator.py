@@ -1,8 +1,7 @@
 #! python3
 
-from    generator      import Generator
-from    requirement    import Requirement
-
+from    generator       import Generator
+from    requirement     import Requirement
 
 class LatexGenerator (Generator):
     LATEX_REQ_TEMPLATE =\
@@ -30,4 +29,3 @@ r"""
 
         with open(i_filename, mode = 'w') as file:
             file.write(text)
-

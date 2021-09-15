@@ -3,48 +3,65 @@
 
 % Preamble
 \documentclass[a4paper]{report}
+\usepackage[margin=0.75in]{geometry}
 
 % Packages
 \usepackage{float}
+\usepackage{titlesec}
 
 % Utilities
 \include{utils}
 \include{env_template}
 
-\makeatletter
-\renewcommand\listoftables{%
-        \@starttoc{lot}%
-}
-\makeatother
-
-\makeatletter
-\renewcommand\listoffigures{%
-        \@starttoc{lof}%
-}
-\makeatother
-
-\makeatletter
-\renewcommand\tableofcontents{%
-        \@starttoc{toc}%
-}
-\makeatother
-
+% Glossary generation
+\include{snip/glossary} % TODO: from XML?
 
 % Document
 \begin{document}
 
-    \level{0}{General considerations}
-    \level{1}{Table of contents}
     \tableofcontents
+    \pagebreak
 
-    \level{1}{Table of figures}
     \listoffigures
+    \pagebreak
 
-    \level{1}{Table of tables}
     \listoftables
+    \pagebreak
 
-    \level{1}{Project presentation}\label{project-presentation}
+    \level{0}{Introduction}
+    \level{1}{Purpose of the document}
     \blindtext[1]
+
+    \level{1}{Document overview}
+
+    This document is a \acrfull{srd}. The purpose of a \acrshort{srd} can be found in section \ref{glossary}.
+
+    \level{1}{Acronyms and abreviations}\label{glossary}
+%    \printglossary[type=\acronymtype]
+    \printnoidxglossaries
+
+    \level{0}{Documents}
+    \level{1}{Applicable documents}
+    \blindtext[1]
+
+    \level{1}{Reference documents}
+    \blindtext[1]
+
+    \level{1}{Project reference documents}
+    \blindtext[1]
+
+    \level{0}{General description}
+    \level{1}{Software item description}\label{software-item-description}
+
+    The \gls{software} is described here.
+
+    \level{1}{Function and purpose}
+    \blindtext[1]
+
+    \level{1}{General constraints}
+    \blindtext[1]
+
+    \level{1}{Model description}
 
     See figure~\ref{fig:architecture-diagram}.
 
@@ -56,29 +73,38 @@
 
     \blindtext[1]
 
-    \level{0}{Functionnal requirements}
 
-    \level{1}{Input commands}
+    \level{0}{Specific requirements}
+
+    \level{1}{Functionnal requirements}
+
+    \level{2}{Input commands}
 
     \blindtext[1]
 
     \include{snip/SRD-REQ-00001}
-    Note: see \ref{project-presentation} for details about this command.
+    Note: see \ref{software-item-description} for details about this command.
 
-    \level{1}{Performance}
-
+    \level{2}{Performance requirements}
     \blindtext[1]
 
-
-    \level{0}{First level}
-
+    \level{2}{Interface requirements}
     \blindtext[1]
 
-\begin{appendices}
-    \chapter{Tracability matrices}\label{ch:tracability-matrices}
+    \level{2}{Operationnal requirements}
+    \blindtext[1]
+
+    \level{0}{Verification and validation}
+    \level{1}{Requirements}
+    \blindtext[1]
+
+    \level{1}{Methods}
+    \blindtext[1]
+
+    \level{0}{Tracability matrices}\label{tracability-matrices}
+
     Test test
 %    \include{snip/matrix_to_SP-PIDS}
-
-\end{appendices}
+%    \include{snip/SRD-REQ-00001.tex_table}
 
 \end{document}
