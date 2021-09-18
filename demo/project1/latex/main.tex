@@ -10,14 +10,34 @@
 \usepackage{titlesec}
 
 % Utilities
-\include{utils}
-\include{env_template}
+\input{utils}
+\input{env_template}
+
+% Generated constants
+\input{snip/constants}
 
 % Glossary generation
-\include{snip/glossary} % TODO: from XML?
+\input{snip/glossary} % TODO: from XML?
+
+
+\newglossarystyle{clong}{%
+ \renewenvironment{theglossary}%
+     {\begin{longtable}{p{.3\linewidth}p{\glsdescwidth}}}%
+     {\end{longtable}}%
+  \renewcommand*{\glossaryheader}{}%
+  \renewcommand*{\glsgroupheading}[1]{}%
+  \renewcommand*{\glossaryentryfield}[5]{%
+    \glstarget{##1}{##2} & ##3\glspostdescription\space ##5\\}%
+  \renewcommand*{\glossarysubentryfield}[6]{%
+     & \glstarget{##2}{\strut}##4\glspostdescription\space ##6\\}%
+  %\renewcommand*{\glsgroupskip}{ & \\}%
+}
+
 
 % Document
 \begin{document}
+    % First page
+    \input{titlepage}
 
     \tableofcontents
     \pagebreak
@@ -37,8 +57,9 @@
     This document is a \acrfull{srd}. The purpose of a \acrshort{srd} can be found in section \ref{glossary}.
 
     \level{1}{Acronyms and abreviations}\label{glossary}
-%    \printglossary[type=\acronymtype]
-    \printnoidxglossaries
+%    \printglossary[style=long-booktabs]
+    \printglossary[style=clong]
+    \printglossary[type=\acronymtype]
 
     \level{0}{Documents}
     \level{1}{Applicable documents}
@@ -82,7 +103,8 @@
 
     \blindtext[1]
 
-    \include{snip/SRD-REQ-00001}
+    \input{snip/SRD-REQ-00001}
+
     Note: see \ref{software-item-description} for details about this command.
 
     \level{2}{Performance requirements}
@@ -91,8 +113,13 @@
     \level{2}{Interface requirements}
     \blindtext[1]
 
+    \input{snip/SRD-REQ-80000}
+    Du texte en dessous pour préciser
+    Une table...
+
     \level{2}{Operationnal requirements}
-    \blindtext[1]
+    \level{3}{Versionning}
+    \input{snip/SRD-REQ-01000}
 
     \level{0}{Verification and validation}
     \level{1}{Requirements}
@@ -104,7 +131,7 @@
     \level{0}{Tracability matrices}\label{tracability-matrices}
 
     Test test
-%    \include{snip/matrix_to_SP-PIDS}
-%    \include{snip/SRD-REQ-00001.tex_table}
+%    \input{snip/matrix_to_SP-PIDS}
+%    \input{snip/SRD-REQ-00001.tex_table}
 
 \end{document}

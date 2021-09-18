@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Example SRD document for a fictional COMP1 component -->
+
+<document>
+    <general>
+        <project internal = "SP"
+                 pretty   = "Super Project 3000"/>
+        <title   internal = "SP-SRD-COMP1"
+                 pretty   = "SRD COMP1" />
+        <version internal = "A-pr1"
+                 pretty   = "A PR1" />
+        <uid pretty = "REF-DOC-TARTANPION" />
+
+        <description>Specification Requirement Document for software component COMP 1</description>
+
+        <author>Jean Bonbheur</author>
+        <author>A.N. O'Nymus</author>
+        <reviewer>Pierre Dangle</reviewer>
+
+        <reqDisplayFormat>SRD-REQ-{id:05d}</reqDisplayFormat>
+        <reqFileFormat>SRD-REQ-{id:05d}.tex</reqFileFormat>
+    </general>
+    <links>
+        <document internal = "SP-PIDS" source = "path/to/PIDS" />
+    </links>
+    <glossary>
+        <acronym    uid = "srd" shorthand = "SRD">Software Requirements Document</acronym>
+        <definition uid = "software">The programs and other operating information used by a computer.</definition>
+        <definition uid = "sw-comp1">Software component dedicated to doing stuff with things.</definition>
+    </glossary>
+    <requirements>
+        <sec name = "internal-data">
+            <!-- Section for internal data description -->
+                <req id        = "01000"
+                     shortDesc = "Software versions">
+                    <text>
+                        The versions of \gls{sw-comp1} component shall follow the following format:\\
+                        \textbf{AA}.\textbf{BB}.\textbf{CC}.\textit{DD} \\
+                        where: \\
+                        \begin{itemize}
+                            \item \textbf{AA} is the major version
+                            \item \textbf{BB} is the minor version
+                            \item \textbf{CC} is the revision version
+                            \item \textit{DD} is a configuration-specific byte
+                        \end{itemize}
+                    </text>
+                    <satisfies>
+                        <link id = "SP-PIDS-REQ-20000" source = "SP-PIDS" />
+                    </satisfies>
+                </req>
+        </sec>
+        <sec name = "input-commands">
+            <!-- Section for input commands -->
+
+            <sec name = "read-sw-version-command">
+                <!-- Section for the READ_SW_VERSION command -->
+
+                <req id        = "00001"
+                     shortDesc = "Treatment of command READ_SW_VERSION">
+                    <text>
+                        The \gls{sw-comp1} component shall:
+                        \begin{enumerate}
+                            \item Check the command size
+                            \item Check the command format, in order :
+                                \begin{enumerate}
+                                    \item Field "CRC"
+                                    \item Field "Version"
+                                \end{enumerate}
+                            \item Log an event eCOMMAND_RECEIVED
+                            \item Format a READ_SW_VERSION_ACK response with, in no particular order:
+                                \begin{itemize}
+                                    \item The software version (as specified in \req{SRD-REQ-01000}\xspace)
+                                    \item The hardware version
+                                \end{itemize}
+                            \item Send the response
+                            \item \blindtext[1]
+                            \item Log an event eCOMMAND_SENT
+                        \end{enumerate}
+                    </text>
+                    <validation>Test</validation>
+                    <satisfies>
+                        <link id = "SP-PIDS-REQ-10000" source = "SP-PIDS" />
+                    </satisfies>
+                </req>
+
+                <req id        = "80000"
+                     shortdesc = "Placeholder">
+                    <text>Mon super texte d'exigence</text>
+                    <validation>Analysis</validation>
+                </req>
+            </sec>
+        </sec>
+        <sec name = "performance">
+
+        </sec>
+        <sec name = "navigability">
+        </sec>
+    </requirements>
+
+</document>

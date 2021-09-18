@@ -3,11 +3,15 @@
 
 % Packages
 \usepackage{blindtext}
+\usepackage{hyperref}
 \usepackage{underscore} % So underscores don't have to escaped in text mode
 \usepackage[toc,page]{appendix}
-\usepackage[acronym]{glossaries}
+\usepackage[acronym,hyperfirst=false]{glossaries}
+\usepackage{glossary-longbooktabs}
 \usepackage{longtable}
 
+%%%%%%%%%%%%%%%%%%
+% Levels
 \newcounter{currentlevel}
 \newcounter{nextlevel}
 
@@ -61,4 +65,11 @@
 \makeatother
 \setcounter{secnumdepth}{100}
 \setcounter{tocdepth}{100}
+
+
+\usepackage{xspace}
+
+%%%%%%%%%%%%%%%%%%
+% Requirement reference macro
+\newcommand{\req}[2]{[\hyperref[#1]{#1}]}
 
