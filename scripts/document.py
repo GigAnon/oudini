@@ -4,7 +4,6 @@ import  xml.etree.ElementTree   as ETree
 from    requirements_set        import RequirementsSet
 from    common_section          import CommonSection
 from    glossary                import Glossary
-from    generator               import Generator
 
 
 class Document:
@@ -72,32 +71,6 @@ class Document:
 
         for child in i_root:
             Document._normalize_attr(child)
-
-    def generate_snippets(self,
-                          i_root_folder : str,
-                          i_generator   : Generator):
-        assert isinstance(i_root_folder, str)
-        assert isinstance(i_generator,   Generator)
-
-        os.makedirs(i_root_folder, exist_ok = True)
-
-        # Generate the requirements
-        for _, req in self.reqs.reqs.items():
-            i_generator.generate_requirement(i_req      = req,
-                                             i_filename = req.get_snippet_filename(i_root_folder     = i_root_folder,
-                                                                                   i_fallback_format = i_generator.DEFAULT_REQ_FILE_FORMAT))
-
-        # Export the document constants
-        i_generator.generate_constants(i_common   = self.common,
-                                       i_filename = self.common.get_constants_snippet_filename(i_root_folder     = i_root_folder,
-                                                                                               i_fallback_format = i_generator.DEFAULT_CONSTANTS_FILE_FORMAT))
-
-        # If present: export the glossary
-        if self.glossary is not None:
-            i_generator.generate_glossary(i_glossary = self.glossary,
-                                          i_filename = self.common.get_constants_snippet_filename(i_root_folder     = i_root_folder,
-                                                                                                  i_fallback_format = i_generator.DEFAULT_GLOSSARY_FILE_FORMAT))
-
 
     def __str__(self):
         s = "%s\n%s\n" % (str(self.common), str(self.reqs))

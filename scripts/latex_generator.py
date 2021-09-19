@@ -1,10 +1,16 @@
 #! python3
+import shutil
 
 from    generator       import Generator
+from    compiler        import Compiler
 from    requirement     import Requirement
 from    common_section  import CommonSection
-from    typing          import Optional
 from    glossary        import Glossary
+from    document        import Document
+
+from    pathlib         import Path
+from    typing          import Optional
+from    typing          import Union
 
 
 class LatexGenerator (Generator):
@@ -50,14 +56,27 @@ r"""
 }}
 """
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self,
+                 i_document         : Document,
+                 i_project_root_dir : Union[str,
+                                            Path] = Path(),
+                 i_compiler         : Optional[Compiler] = None):
+        super().__init__(i_document         = i_document,
+                         i_project_root_dir = i_project_root_dir,
+                         i_compiler         = i_compiler)
 
-    def generate_requirement(self,
-                             i_req      : Requirement,
-                             i_filename : Optional[str] = None) -> str:
+        self.latex_root_dir = self.root_dir.joinpath('latex')       # TODO constant / improve?
+        self.snip_root_dir  = self.latex_root_dir.joinpath('snip') # TODO constant / improve?
+
+
+    def _generate_requirement(self,
+                              i_req      : Requirement,
+                              i_filename : Optional[Union[str,
+                                                          Path]] = None) -> str:
         assert isinstance(i_req,        Requirement)
-        assert isinstance(i_filename,   str) or i_filename is None
+        assert isinstance(i_filename,   str)    or \
+               isinstance(i_filename,   Path)   or \
+               i_filename is None
 
         if i_req.validation_strategy is not None:
             validation_strategy = LatexGenerator.LATEX_VALIDATION_STRATEGY_TEMPLATE.format(text = i_req.validation_strategy)
@@ -77,12 +96,16 @@ r"""
         return text
 
 
-    def generate_constants(self,
-                           i_common   : CommonSection,
-                           i_filename : Optional[str] = None) -> str:
-        assert isinstance(i_filename,   str) or i_filename is None
-        assert isinstance(i_filename,   str) or i_filename is None
+    def _generate_constants(self,
+                            i_common   : CommonSection,
+                            i_filename : Optional[Union[str,
+                                                        Path]] = None) -> str:
+        assert isinstance(i_common,     CommonSection)
+        assert isinstance(i_filename,   str)    or \
+               isinstance(i_filename,   Path)   or \
+               i_filename is None
 
+        # TODO read from XML
         toto = {
                 'projectTitlePretty'     : 'MY SUPER PROJECT',
                 'documentTitlePretty'    : 'MY SUPER DOCUMENT',
@@ -102,11 +125,14 @@ r"""
         return text
 
 
-    def generate_glossary(self,
-                          i_glossary : Glossary,
-                          i_filename : Optional[str] = None) -> str:
+    def _generate_glossary(self,
+                           i_glossary : Glossary,
+                           i_filename : Optional[Union[str,
+                                                       Path]] = None) -> str:
         assert isinstance(i_glossary,   Glossary)
-        assert isinstance(i_filename,   str) or i_filename is None
+        assert isinstance(i_filename,   str)    or \
+               isinstance(i_filename,   Path)   or \
+               i_filename is None
 
         acronyms = ""
         for a in i_glossary.acronyms.values():
@@ -129,3 +155,25 @@ r"""
                 file.write(text)
 
         return text
+
+    def generate_and_compile(self,
+                             i_out_dir          : Union[str, Path],
+                             i_clean_before_run : Optional[bool] = True):
+        assert isinstance(i_out_dir, str)   or \
+               isinstance(i_out_dir, Path)
+        assert isinstance(i_clean_before_run, bool)
+
+        # If requested, delete the output folder first
+        if i_clean_before_run:
+            shutil.rmtree(i_out_dir, ignore_errors = True)
+
+        # Snippet generation is done in the LaTeX / snip folder
+        self.generate_document(i_document    = self.document,
+                               i_root_folder = self.snip_root_dir)
+
+        if self.compiler is None:
+            raise Exception("No LaTeX compiler specified")
+
+        self.compiler.run(i_document     = self.document,
+                          i_doc_root_dir = self.latex_root_dir,
+                          i_output_dir   = i_out_dir)

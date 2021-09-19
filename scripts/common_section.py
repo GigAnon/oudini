@@ -1,9 +1,9 @@
 #! python3
 
-import os
-import xml.etree.ElementTree as ETree
-from   copy                  import deepcopy
-from   typing                import Optional
+import  xml.etree.ElementTree   as ETree
+from    typing                  import Optional
+from    typing                  import Union
+from    pathlib                 import Path
 
 
 class CommonSection:
@@ -60,9 +60,11 @@ class CommonSection:
         return obj
 
     def get_constants_snippet_filename(self,
-                                       i_root_folder     : Optional[str] = "",
+                                       i_root_folder     : Optional[Union[str,
+                                                                    Path]] = Path(),
                                        i_fallback_format : Optional[str] = None):
-        assert isinstance(i_root_folder,     str) or i_root_folder     is None
+        assert isinstance(i_root_folder,     str) or \
+               isinstance(i_root_folder,     Path)
         assert isinstance(i_fallback_format, str) or i_fallback_format is None
 
         if      self.constants_file_format is not None:
@@ -72,7 +74,7 @@ class CommonSection:
         else:
             raise Exception("No format given")
 
-        return os.path.join(i_root_folder, format_str.format()) # TODO options
+        return Path(i_root_folder).joinpath(format_str.format())
 
     def __str__(self):
         s = ""

@@ -1,9 +1,10 @@
 #! python3
-import os
-import xml.etree.ElementTree as ETree
-from   copy                  import deepcopy
-from   typing                import Optional
-from   common_section        import CommonSection
+import  xml.etree.ElementTree   as ETree
+from    copy                    import deepcopy
+from    typing                  import Optional
+from    typing                  import Union
+from    pathlib                 import Path
+from    common_section          import CommonSection
 
 
 class Requirement:
@@ -55,9 +56,11 @@ class Requirement:
         return obj
 
     def get_snippet_filename(self,
-                             i_root_folder     : Optional[str] = "",
+                             i_root_folder     : Optional[Union[str,
+                                                                Path]] = Path(),
                              i_fallback_format : Optional[str] = None):
-        assert isinstance(i_root_folder,     str) or i_root_folder     is None
+        assert isinstance(i_root_folder,     str) or \
+               isinstance(i_root_folder,     Path)
         assert isinstance(i_fallback_format, str) or i_fallback_format is None
 
         if self.common.req_file_format:
@@ -67,7 +70,7 @@ class Requirement:
         else:
             raise Exception("No file format given")
 
-        return os.path.join(i_root_folder, file_format.format(id = self.id))
+        return Path(i_root_folder).joinpath(file_format.format(id = self.id))
 
     def format_id(self):
         if self.common is not None:
