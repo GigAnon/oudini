@@ -1,5 +1,5 @@
 #! python3
-
+import  logging
 import  xml.etree.ElementTree   as ETree
 from    copy                    import deepcopy
 from    typing                  import Optional
@@ -15,9 +15,9 @@ class RequirementsSet:
     def __init__(self,
                  i_common : Optional[CommonSection] = None):
         assert isinstance(i_common, CommonSection) or i_common is None
-
-        self.reqs   = {}
-        self.common = i_common # By reference
+        self._logger = logging.getLogger("%s-%s" %(__name__, type(self).__name__))
+        self.reqs    = {}
+        self.common  = i_common # By reference
 
     @classmethod
     def from_xml_element(cls,
@@ -32,6 +32,7 @@ class RequirementsSet:
         # Recursively walk through sections to flatten out the requirements
         # (depth should be reasonable)
         obj._walk_xml_add_reqs(i_section = i_elt)
+        obj._logger.debug("Created from XML (%u reqs)" % (len(obj.reqs)))
 
         return obj
 

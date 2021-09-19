@@ -1,8 +1,6 @@
 #! python3
-import os
+import  logging
 import xml.etree.ElementTree as ETree
-from   copy                  import deepcopy
-from   typing                import Optional
 
 
 class Glossary:
@@ -14,6 +12,7 @@ class Glossary:
         ATTR_SHORTHAND = "shorthand"
 
         def __init__(self):
+            self._logger     = logging.getLogger("%s-%s" %(__name__, type(self).__name__))
             self.uid         = None
             self.shorthand   = None
             self.description = None
@@ -33,6 +32,7 @@ class Glossary:
             assert obj.description is not None
             assert obj.uid is not None
 
+            obj._logger.debug("Created acronym [{uid}] from XML".format(uid = obj.uid))
             return obj
 
         def __str__(self):
@@ -46,6 +46,7 @@ class Glossary:
         ATTR_UID       = "uid"
 
         def __init__(self):
+            self._logger     = logging.getLogger("%s-%s" %(__name__, type(self).__name__))
             self.uid         = None
             self.description = None
 
@@ -63,6 +64,7 @@ class Glossary:
             assert obj.description is not None
             assert obj.uid is not None
 
+            obj._logger.debug("Created definition [{uid}] from XML".format(uid = obj.uid))
             return obj
 
         def __str__(self):
@@ -72,6 +74,7 @@ class Glossary:
             return "'%s': '%s'" % (self.uid, self.description)
 
     def __init__(self):
+        self._logger     = logging.getLogger("%s-%s" %(__name__, type(self).__name__))
         self.acronyms    = {}
         self.definitions = {}
 
@@ -91,7 +94,10 @@ class Glossary:
                 definition = Glossary.Definition.from_xml_element(e)
                 obj.definitions[definition.uid] = definition
             else:
+                obj._logger.warning("Ignoring unknown section <%s>" % (e.tag))
                 pass # Ignored tag
+        obj._logger.info("Created glossary (%u acronyms, %u definitions) from XML" % (len(obj.acronyms),
+                                                                                      len(obj.definitions)))
         return obj
 
     def __str__(self):

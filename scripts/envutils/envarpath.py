@@ -1,5 +1,6 @@
 #! python3
 import  copy
+import  logging
 from    pathlib import Path
 import  os
 from    typing import Union
@@ -15,7 +16,8 @@ class EnvarPath:
         """
         Constructor
         """
-        self._path = ""
+        self._logger = logging.getLogger("%s-%s" %(__name__, type(self).__name__))
+        self._path   = ""
 
     @classmethod
     def from_environ(cls):
@@ -27,6 +29,7 @@ class EnvarPath:
         obj = cls()
         obj._path = os.environ[EnvarPath.PATH_ENVAR_NAME]
 
+        obj._logger.debug("Created instance - PATH = '%s'" % (obj._path))
         return obj
 
     def append(self,
@@ -36,6 +39,7 @@ class EnvarPath:
         :param i_item:
         :return:
         """
+        self._logger.debug("Appended: '%s'" % (str(i_item)))
         return self._concatenate(i_format = "{path_str}{separator}{item}",
                                  i_item   = str(i_item))
 
@@ -46,6 +50,7 @@ class EnvarPath:
         :param i_item:
         :return:
         """
+        self._logger.debug("Prepended: '%s'" % (str(i_item)))
         return self._concatenate(i_format = "{item}{separator}{path_str}",
                                  i_item   = str(i_item))
 
@@ -91,3 +96,4 @@ class EnvarPath:
                 p.prepend(arg)
 
         return p
+

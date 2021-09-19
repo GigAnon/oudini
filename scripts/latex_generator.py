@@ -1,5 +1,6 @@
 #! python3
 import shutil
+import logging
 
 from    generator       import Generator
 from    compiler        import Compiler
@@ -68,6 +69,8 @@ r"""
         self.latex_root_dir = self.root_dir.joinpath('latex')       # TODO constant / improve?
         self.snip_root_dir  = self.latex_root_dir.joinpath('snip') # TODO constant / improve?
 
+        self._logger.info("Created LaTex generator with compiler '%s'" % (type(i_compiler).__name__))
+
 
     def _generate_requirement(self,
                               i_req      : Requirement,
@@ -90,6 +93,8 @@ r"""
                                                         validation_strategy = validation_strategy)
 
         if i_filename is not None:
+            self._logger.debug("Writing [{req}] into '{file}'".format(req  = i_req.format_id(),
+                                                                      file = i_filename.name))
             with open(i_filename, mode = 'w') as file:
                 file.write(text)
 
@@ -119,6 +124,7 @@ r"""
                                                                   constant_value = v)
 
         if i_filename is not None:
+            self._logger.debug("Writing constantes into '{file}'".format(file = i_filename.name))
             with open(i_filename, mode = 'w') as file:
                 file.write(text)
 
@@ -151,6 +157,7 @@ r"""
                                                                     acronyms    = acronyms)
 
         if i_filename is not None:
+            self._logger.debug("Writing glossary into '{file}'".format(file = i_filename.name))
             with open(i_filename, mode = 'w') as file:
                 file.write(text)
 
@@ -165,6 +172,7 @@ r"""
 
         # If requested, delete the output folder first
         if i_clean_before_run:
+            self._logger.info("Deleting '{dir}'".format(dir = i_out_dir))
             shutil.rmtree(i_out_dir, ignore_errors = True)
 
         # Snippet generation is done in the LaTeX / snip folder
@@ -177,3 +185,4 @@ r"""
         self.compiler.run(i_document     = self.document,
                           i_doc_root_dir = self.latex_root_dir,
                           i_output_dir   = i_out_dir)
+

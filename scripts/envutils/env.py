@@ -1,5 +1,5 @@
 #! python3
-
+import logging
 import  os
 import  contextlib
 
@@ -13,8 +13,13 @@ class Env:
     def __init__(self,
                  *remove,
                  **update):
+        self._logger = logging.getLogger("%s-%s" %(__name__, type(self).__name__))
         self._remove = remove
         self._update = update
+
+        self._logger.debug("Initialised environment:")
+        self._logger.debug("  DELETED ENVARS        %s" % (repr(self._remove)))
+        self._logger.debug("  ADDED/MODIFIED ENVARS %s" % (repr(self._update)))
 
     @contextlib.contextmanager
     def setup(self):
@@ -39,7 +44,12 @@ class Env:
         try:
             env.update(update)
             [env.pop(k, None) for k in remove]
+
+            self._logger.info("Setting up environment")
+            self._logger.debug(env)
+
             yield
         finally:
+            self._logger.info("Reseting environment")
             env.update(update_after)
             [env.pop(k) for k in remove_after]

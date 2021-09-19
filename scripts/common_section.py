@@ -1,5 +1,5 @@
 #! python3
-
+import  logging
 import  xml.etree.ElementTree   as ETree
 from    typing                  import Optional
 from    typing                  import Union
@@ -34,6 +34,8 @@ class CommonSection:
 
 
     def __init__(self):
+        self._logger = logging.getLogger("%s-%s" %(__name__, type(self).__name__))
+
         self.project                = None
         self.req_display_format     = None
         self.req_file_format        = None
@@ -53,9 +55,13 @@ class CommonSection:
             elif    e.tag == CommonSection.REQFILEFORMAT_TAG_STR:
                 obj.req_file_format = e.text
             elif    e.tag == CommonSection.PROJECT_TAG_STR:
-                pass
+                obj._logger.warning("<%s> section found, but parsing is unimplemented" % (e.tag))
+                pass # TODO
             else:
+                obj._logger.warning("Ignoring unknown section <%s>" % (e.tag))
                 pass # Ignored tag
+
+        obj._logger.debug("Created from XML : %s" % (repr(obj)))
 
         return obj
 

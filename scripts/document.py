@@ -1,5 +1,5 @@
 #! python3
-import  os
+import  logging
 import  xml.etree.ElementTree   as ETree
 from    requirements_set        import RequirementsSet
 from    common_section          import CommonSection
@@ -9,6 +9,8 @@ from    glossary                import Glossary
 class Document:
 
     def __init__(self):
+        self._logger = logging.getLogger("%s-%s" %(__name__, type(self).__name__))
+
         self.common     = None
         self.reqs       = None
         self.glossary   = None
@@ -26,12 +28,16 @@ class Document:
 
         obj = cls()
 
+        obj._logger.info("Creating document from XML")
+
         # Search for common section and glossary
         for base in root:
             if      base.tag == CommonSection.COMMON_TAG_STR:
+                obj._logger.debug("Found common section (<%s>)" % (base.tag))
                 assert obj.common is None
                 obj.common = CommonSection.from_xml_element(i_elt = base)
             elif    base.tag == Glossary.GLOSSARY_TAG_STR:
+                obj._logger.debug("Found glossary section (<%s>)" % (base.tag))
                 assert obj.glossary is None
                 obj.glossary = Glossary.from_xml_element(i_elt = base)
             else:
@@ -44,6 +50,7 @@ class Document:
         # Search for requirements section
         for base in root:
             if      base.tag == RequirementsSet.REQ_SET_TAG_STR:
+                obj._logger.debug("Found requirements section (<%s>)" % (base.tag))
                 assert obj.reqs is None
                 obj.reqs = RequirementsSet.from_xml_element(i_elt    = base,
                                                             i_common = obj.common)
@@ -52,6 +59,11 @@ class Document:
 
         # Requirements section is not optional
         assert obj.reqs is not None
+
+        obj._logger.info("Document [{project}:{document}] successfully parsed ({num_req} requirements found)".format(project  = repr(obj.common.project),
+                                                                                                                     document = "TODO",
+                                                                                                                     num_req  = len(obj.reqs.reqs)))
+        obj._logger.debug(repr(obj))
 
         return obj
 

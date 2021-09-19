@@ -1,4 +1,5 @@
 #! python3
+import  logging
 import  xml.etree.ElementTree   as ETree
 from    copy                    import deepcopy
 from    typing                  import Optional
@@ -21,8 +22,8 @@ class Requirement:
     def __init__(self,
                  i_common : Optional[CommonSection] = None):
         assert isinstance(i_common, CommonSection) or i_common is None
-
-        self.id                 = None
+        self._logger             = logging.getLogger("%s-%s" %(__name__, type(self).__name__))
+        self.id                  = None
         self.desc                = ""
         self.text                = ""
         self.validation_strategy = None
@@ -52,6 +53,7 @@ class Requirement:
             elif    e.tag == Requirement.VALIDATION_TAG_STR:
                 obj.validation_strategy = e.text # TODO ENUM
             else:
+                obj._logger.warning("<%s> tag ignored" % (e.tag))
                 pass # Ignored tag
         return obj
 
@@ -79,11 +81,11 @@ class Requirement:
             return str(self.id)
 
     def __str__(self):
+        return self.format_id()
+
+    def __repr__(self):
         s = "[%s] %s" % (self.format_id(), self.desc)
         if self.validation_strategy is not None:
             s += " %s" % (self.validation_strategy)
 
         return s
-
-    def __repr__(self):
-        return self.__str__()
