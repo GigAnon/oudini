@@ -5,6 +5,12 @@
 \usepackage{graphicx}
 \usepackage{xparse}
 \usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{float}
+\usepackage{titlesec}
+\usepackage{etoolbox}
+\usepackage[style=iso]{datetime2}
 
 \graphicspath{ {./media/} }
 
@@ -14,8 +20,8 @@
     colorlinks,
     citecolor=black,
     filecolor=black,
-    linkcolor=black,
-    urlcolor=black
+    linkcolor=darkgray,
+    urlcolor=black,
     linktoc=all,
 }
 
@@ -57,3 +63,57 @@
 \renewcommand{\rmdefault}{phv} % Arial
 \renewcommand{\sfdefault}{phv} % Arial
 
+% Header and footer
+
+% \chapter command needs to be patched so it stops re-applying the 'plain' style
+% See https://tex.stackexchange.com/questions/117328/fancyhdr-does-not-apply-same-header-footer-on-chapter-and-non-chapter-pages
+\patchcmd{\chapter}{\thispagestyle{plain}}{\thispagestyle{fancy}}{}{}
+
+% Setup the 'fancy' page style
+\fancypagestyle{fancy}
+{
+    \fancyhf{} % remove everything
+    \renewcommand{\headrulewidth}{2pt}
+    \renewcommand{\footrulewidth}{1pt}
+
+    \lhead  {
+                \projectTitlePretty \\
+                \documentTitlePretty
+            }
+    \chead  {
+                \includegraphics [scale=0.6] {classification}
+            }
+    \rhead  {
+                \documentUidPretty \\
+                VERSION HERE \\
+                \today
+            }
+    \rfoot  {
+                \thepage~/~\pageref*{LastPage}
+            }
+    \cfoot  {
+                \raisebox{-0.5\height}{\includegraphics [scale=0.6] {classification}}
+            }
+}
+
+% Apply the style *everywhere* (except first page?)
+\pagestyle{fancy}
+
+
+% Glossary
+\newglossarystyle{clong}
+{
+    \renewenvironment{theglossary}
+        {\begin{longtable}{p{.3\linewidth}p{\glsdescwidth}}}%
+        {\end{longtable}}
+    \renewcommand*{\glossaryheader}{}%
+    \renewcommand*{\glsgroupheading}[1]{}%
+    \renewcommand*{\glossaryentryfield}[5]
+        {
+            \glstarget{##1}{##2} & ##3\glspostdescription\space ##5\\
+        }
+    \renewcommand*{\glossarysubentryfield}[6]
+        {
+            & \glstarget{##2}{\strut}##4\glspostdescription\space ##6\\
+        }
+}

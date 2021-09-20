@@ -14,3 +14,7 @@
     \hspace{0pt}
     \end{center}
 \end{titlepage}
+
+% For some annoying reason, the titlepage env resets the page counter at start *and end*.
+% Since we're not savages, we like having the page numbering actually match the pages...
+\addtocounter{page}{1}
