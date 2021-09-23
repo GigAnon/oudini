@@ -8,16 +8,51 @@ from    glossary                import Glossary
 
 class Document:
 
-    def __init__(self):
+    def __init__(self,
+                 i_glossary_class       : Glossary        = Glossary,
+                 i_common_section_class : CommonSection   = CommonSection,
+                 i_req_set_class        : RequirementsSet = RequirementsSet):
         self._logger = logging.getLogger("%s-%s" %(__name__, type(self).__name__))
+        self.root_name  = "document"
 
         self.common     = None
         self.reqs       = None
         self.glossary   = None
 
+        self._glossary_class        = i_glossary_class
+        self._common_section_class  = i_common_section_class
+        self._req_set_class         = i_req_set_class
+
+    def to_xml(self) -> ETree.ElementTree:
+        self._logger.info(f"Generating XML for document {repr(self.common.title)}")
+
+        assert (self.common is not None)
+        assert (self.reqs   is not None)
+
+        root = ETree.Element(self.root_name)
+
+        self._logger.debug("Generating XML for common section")
+        root.append(self.common.to_xml())
+
+        if self.glossary is not None:
+            self._logger.debug("Generating XML for glossary section")
+            root.append(self.glossary.to_xml())
+
+        self._logger.debug("Generating XML for requirements section")
+        root.append(self.reqs.to_xml())
+
+        ETree.indent(root, space = ' '*4)
+        return ETree.ElementTree(root)
+
     @classmethod
     def from_xml(cls,
                  i_tree : ETree.ElementTree):
+        """
+        Generates a Document object from an XML structure
+
+        :param i_tree: Root of the XML document to parse
+        :return      : Created Document object created from the XML
+        """
         assert isinstance(i_tree, ETree.ElementTree)
 
         root = i_tree.getroot()
@@ -30,16 +65,23 @@ class Document:
 
         obj._logger.info("Creating document from XML")
 
+        # Read root tag name
+        obj.root_name = root.tag
+
         # Search for common section and glossary
         for base in root:
-            if      base.tag == CommonSection.COMMON_TAG_STR:
-                obj._logger.debug("Found common section (<%s>)" % (base.tag))
+            if      base.tag == obj._common_section_class.TAG_STR:
+                obj._logger.debug(f"Found common section (<{base.tag}>, class '{obj._common_section_class.__name__}')")
+
                 assert obj.common is None
-                obj.common = CommonSection.from_xml_element(i_elt = base)
-            elif    base.tag == Glossary.GLOSSARY_TAG_STR:
-                obj._logger.debug("Found glossary section (<%s>)" % (base.tag))
+                obj.common = obj._common_section_class.from_xml_element(i_elt = base)
+
+            elif    base.tag == obj._glossary_class.TAG_STR:
+                obj._logger.debug(f"Found glossary section (<{base.tag}>, class '{obj._glossary_class.__name__}')")
+
                 assert obj.glossary is None
-                obj.glossary = Glossary.from_xml_element(i_elt = base)
+                obj.glossary = obj._glossary_class.from_xml_element(i_elt = base)
+
             else:
                 pass
 
@@ -49,11 +91,12 @@ class Document:
 
         # Search for requirements section
         for base in root:
-            if      base.tag == RequirementsSet.REQ_SET_TAG_STR:
-                obj._logger.debug("Found requirements section (<%s>)" % (base.tag))
+            if      base.tag == obj._req_set_class.TAG_STR:
+                obj._logger.debug(f"Found requirements section (<{base.tag}>, class '{obj._req_set_class.__name__}')")
                 assert obj.reqs is None
-                obj.reqs = RequirementsSet.from_xml_element(i_elt    = base,
-                                                            i_common = obj.common)
+                obj.reqs = obj._req_set_class.from_xml_element(i_elt    = base,
+                                                               i_common = obj.common)
+
             else:
                 pass
 

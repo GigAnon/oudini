@@ -9,9 +9,9 @@ from    common_section          import CommonSection
 
 
 class Requirement:
-    REQ_TAG_STR             = "req"
-    REQ_ATTR_ID_STR         = "id"
-    REQ_ATTR_SHORT_DESC_STR = "shortdesc"
+    TAG_STR             = "req"
+    ATTR_ID_STR         = "id"
+    ATTR_SHORT_DESC_STR = "shortdesc"
 
     TEXT_TAG_STR    = "text"
 
@@ -22,7 +22,7 @@ class Requirement:
     def __init__(self,
                  i_common : Optional[CommonSection] = None):
         assert isinstance(i_common, CommonSection) or i_common is None
-        self._logger             = logging.getLogger("%s-%s" %(__name__, type(self).__name__))
+        self._logger             = logging.getLogger("%s-%s" % (__name__, type(self).__name__))
         self.id                  = None
         self.desc                = ""
         self.text                = ""
@@ -32,25 +32,50 @@ class Requirement:
     def __bool__(self):
         return self.id is not None
 
+    def to_xml(self) -> ETree.Element:
+
+        # Mandatory fields
+        assert self.id   is not None
+        assert self.text is not None
+
+        elt = ETree.Element(self.TAG_STR)
+
+        elt.attrib[self.ATTR_ID_STR] = "{id:05d}".format(id = self.id)
+
+        if (self.desc):
+            elt.attrib[self.ATTR_SHORT_DESC_STR] = self.desc
+
+        ETree.SubElement(elt,
+                         self.TEXT_TAG_STR).text = self.text
+
+        if (self.validation_strategy):
+            ETree.SubElement(elt,
+                             self.VALIDATION_TAG_STR).text = self.validation_strategy
+
+        # TODO LINKS
+
+        return elt
+
+
     @classmethod
     def from_xml_element(cls,
                          i_elt    : ETree.Element,
                          i_common : CommonSection):
         assert isinstance(i_elt,    ETree.Element)
         assert isinstance(i_common, CommonSection)
-        assert i_elt.tag == Requirement.REQ_TAG_STR
+        assert i_elt.tag == cls.TAG_STR
 
         obj = cls(i_common = i_common)
 
-        obj.id   = int(i_elt.get(Requirement.REQ_ATTR_ID_STR))
-        obj.desc = deepcopy(i_elt.get(Requirement.REQ_ATTR_SHORT_DESC_STR))
+        obj.id   = int(i_elt.get(obj.ATTR_ID_STR))
+        obj.desc = deepcopy(i_elt.get(obj.ATTR_SHORT_DESC_STR))
 
         for e in i_elt:
-            if      e.tag == Requirement.TEXT_TAG_STR:
+            if      e.tag == obj.TEXT_TAG_STR:
                 obj.text = e.text
-            elif    e.tag == Requirement.LINKS_TAG_STR:
-                pass
-            elif    e.tag == Requirement.VALIDATION_TAG_STR:
+            elif    e.tag == obj.LINKS_TAG_STR:
+                pass # TODO LINKS
+            elif    e.tag == obj.VALIDATION_TAG_STR:
                 obj.validation_strategy = e.text # TODO ENUM
             else:
                 obj._logger.warning("<%s> tag ignored" % (e.tag))
@@ -61,8 +86,7 @@ class Requirement:
                              i_root_folder     : Optional[Union[str,
                                                                 Path]] = Path(),
                              i_fallback_format : Optional[str] = None):
-        assert isinstance(i_root_folder,     str) or \
-               isinstance(i_root_folder,     Path)
+        assert isinstance(i_root_folder, (str, Path))
         assert isinstance(i_fallback_format, str) or i_fallback_format is None
 
         if self.common.req_file_format:
