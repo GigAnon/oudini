@@ -5,7 +5,7 @@
 <document>
     <general>
         <project internal = "SP"
-                 pretty   = "Super Project 3000"/>
+                 pretty   = "Super Project 3000 &amp; co"/>
         <title   internal = "SP-SRD-COMP1"
                  pretty   = "SRD COMP1" />
         <version internal = "A-pr1"
@@ -14,12 +14,15 @@
 
         <description>Specification Requirement Document for software component COMP 1</description>
 
-        <author>Jean Bonbheur</author>
-        <author>A.N. O'Nymus</author>
-        <reviewer>Pierre Dangle</reviewer>
-
         <reqDisplayFormat>SRD-REQ-{id:05d}</reqDisplayFormat>
         <reqFileFormat>SRD-REQ-{id:05d}.tex</reqFileFormat>
+
+        <people>
+            <person role="author"   >Jean Bonbheur</person>
+            <person role="author"   >A.N. O'Nymus</person>
+            <person role="reviewer" >Pierre Dangle</person>
+            <person role="QA"       >John Due</person>
+        </people>
     </general>
     <links>
         <document internal = "SP-PIDS" source = "path/to/PIDS" />

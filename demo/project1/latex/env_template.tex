@@ -29,6 +29,7 @@
 \NewDocumentEnvironment{requirement}{m o}
     {
         \vspace{0.05cm}
+        \interlinepenalty 10000 % Discourage LaTeX from adding page breaks in the env
         \begin{flushleft}
             \textbf{\large Requirement [#1] } \label{#1}
             \IfValueTF{#2} % If optionnal argument is passed
@@ -48,6 +49,7 @@
         \end{tabular}
         \end{center}
         \vspace{1cm}
+        \interlinepenalty 0 % Reset the interline penalty for page breaks
     }
 
 % Environment for authors / reviewers / etc. table on first page

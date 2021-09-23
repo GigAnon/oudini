@@ -2,8 +2,8 @@
 
 import  xml.etree.ElementTree   as ElementTree
 from    document                import Document
-from    latex_generator         import LatexGenerator
-from    miktex_compiler         import MiktexCompiler
+from    latex.latex_generator   import LatexGenerator
+from    latex.miktex_compiler   import MiktexCompiler
 
 import  logging
 import  os

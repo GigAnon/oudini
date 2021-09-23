@@ -1,6 +1,5 @@
 #! python3
 import shutil
-import logging
 
 from    generator       import Generator
 from    compiler        import Compiler
@@ -15,6 +14,10 @@ from    typing          import Union
 
 
 class LatexGenerator (Generator):
+    """
+        LaTeX document generator
+    """
+
     DEFAULT_REQ_FILE_FORMAT       = "{id:05d}.tex"
     DEFAULT_CONSTANTS_FILE_FORMAT = "constants.tex"
     DEFAULT_GLOSSARY_FILE_FORMAT  = "glossary.tex"
@@ -62,6 +65,13 @@ r"""
                  i_project_root_dir : Union[str,
                                             Path] = Path(),
                  i_compiler         : Optional[Compiler] = None):
+        """
+            Constructor.
+        :param i_document        : Document to generate and compile
+        :param i_project_root_dir: Root of the LaTeX project (i.e. where the .tex root document is)
+        :param i_compiler        : LaTeX compiler to use for document generation
+        """
+
         super().__init__(i_document         = i_document,
                          i_project_root_dir = i_project_root_dir,
                          i_compiler         = i_compiler)
@@ -105,26 +115,34 @@ r"""
                             i_common   : CommonSection,
                             i_filename : Optional[Union[str,
                                                         Path]] = None) -> str:
+        """
+        Generate a .tex file containing a LaTeX-compatible definition of the constants provided by
+        the requirement database 'common' section
+
+        :param i_common  : 'Common' section of the requirement database
+        :param i_filename: Name for the .tex file the constants will be defined into. If none is provided, perform a dry run.
+        :return: The content of the generated LaTeX code
+        """
         assert isinstance(i_common,     CommonSection)
         assert isinstance(i_filename,   str)    or \
                isinstance(i_filename,   Path)   or \
                i_filename is None
 
-        # TODO read from XML
-        toto = {
-                'projectTitlePretty'     : 'MY SUPER PROJECT',
-                'documentTitlePretty'    : 'MY SUPER DOCUMENT',
-                'documentUidPretty'      : 'UID',
-                'documentCategoryPretty' : 'Category ??',
-                }
+        constants = {
+                        'projectTitlePretty'     : repr(i_common.project) if i_common.project else "UNDEFINED PROJECT",
+                        'documentTitlePretty'    : repr(i_common.title)   if i_common.title   else "UNDEFINED DOCUMENT",
+                        'documentUidPretty'      : "UID GOES HERE", # TODO read from XML
+                        'documentCategoryPretty' : "???",
+                    }
+
 
         text = ""
-        for k, v in toto.items():
+        for k, v in constants.items():
             text += LatexGenerator.LATEX_CONSTANT_TEMPLATE.format(constant_name  = k,
-                                                                  constant_value = v)
+                                                                  constant_value = LatexGenerator.sanitize(v))
 
         if i_filename is not None:
-            self._logger.debug("Writing constantes into '{file}'".format(file = i_filename.name))
+            self._logger.debug("Writing constants into '{file}'".format(file = i_filename.name))
             with open(i_filename, mode = 'w') as file:
                 file.write(text)
 
@@ -185,4 +203,26 @@ r"""
         self.compiler.run(i_document     = self.document,
                           i_doc_root_dir = self.latex_root_dir,
                           i_output_dir   = i_out_dir)
+
+    @staticmethod
+    def sanitize(i_str: str):
+        """
+        Escape the characters of i_str to make it LaTeX-friendly.
+
+        The following characters will be escaped: & % $ # _ { } ~ ^ \
+
+        :param i_str: String to be sanized (escaped)
+        :return:      Sanitized string
+        """
+        # Backslashes must be escaped first
+        i_str = i_str.replace('\\', r'\textbackslash')
+
+        return i_str.replace('&',  r'\&')                  \
+                    .replace('%',  r'\%')                  \
+                    .replace('$',  r'\$')                  \
+                    .replace('_',  r'\_')                  \
+                    .replace('{',  r'\{')                  \
+                    .replace('}',  r'\}')                  \
+                    .replace('~',  r'\textasciitilde')     \
+                    .replace('^',  r'\textasciicircum')
 

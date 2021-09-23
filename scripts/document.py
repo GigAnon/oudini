@@ -61,7 +61,7 @@ class Document:
         assert obj.reqs is not None
 
         obj._logger.info("Document [{project}:{document}] successfully parsed ({num_req} requirements found)".format(project  = repr(obj.common.project),
-                                                                                                                     document = "TODO",
+                                                                                                                     document = repr(obj.common.title),
                                                                                                                      num_req  = len(obj.reqs.reqs)))
         obj._logger.debug(repr(obj))
 
