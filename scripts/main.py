@@ -23,7 +23,8 @@ logging.getLogger("envutils").setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
 
-PROJECT_ROOT_DIR = Path(r"D:/DataDump/OuDini/demo/project1/").resolve()
+ROOT_DIR         = Path(__file__).parent.joinpath('..').resolve()
+PROJECT_ROOT_DIR = ROOT_DIR.joinpath(r"demo", r"project1").resolve()
 
 doc = Document.from_xml(ElementTree.parse(os.path.join(PROJECT_ROOT_DIR, "SP-SRD-COMP1.xml")))
 
