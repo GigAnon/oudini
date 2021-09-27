@@ -30,14 +30,14 @@ doc = Document.from_xml(ElementTree.parse(os.path.join(PROJECT_ROOT_DIR, "SP-SRD
 
 compiler = MiktexCompiler(i_miktex_bin_dir = Path("E:/miktex-portable/texmfs/install/miktex/bin/x64"))
 
-latex_generator = LatexGenerator(i_document         = doc,
-                                 i_project_root_dir = PROJECT_ROOT_DIR,
+latex_generator = LatexGenerator(i_project_root_dir = PROJECT_ROOT_DIR,
                                  i_compiler         = compiler)
 
 
 start_time = timer()
 
-latex_generator.generate_and_compile(i_out_dir = PROJECT_ROOT_DIR.joinpath('out'))
+latex_generator.generate_and_compile(i_document= doc,
+                                     i_out_dir = PROJECT_ROOT_DIR.joinpath('out'))
 
 end_time = timer()
 

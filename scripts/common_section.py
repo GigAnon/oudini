@@ -105,10 +105,10 @@ class CommonSection:
                                                                       obj.list[-1].name,
                                                                       obj.list[-1].role)
                 else:
-                    obj._logger.warning("Ignoring unknown section <%s>" % (e.tag))
+                    obj._logger.warning(f"Ignoring unknown section <{e.tag}>")
                     pass # Ignored tag
 
-            obj._logger.debug("Created from XML : %s" % (repr(obj)))
+            obj._logger.debug(f"Created from XML : {repr(obj)}")
 
             return obj
 

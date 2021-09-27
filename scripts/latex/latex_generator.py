@@ -61,19 +61,16 @@ r"""
 """
 
     def __init__(self,
-                 i_document         : Document,
                  i_project_root_dir : Union[str,
                                             Path] = Path(),
                  i_compiler         : Optional[Compiler] = None):
         """
             Constructor.
-        :param i_document        : Document to generate and compile
         :param i_project_root_dir: Root of the LaTeX project (i.e. where the .tex root document is)
         :param i_compiler        : LaTeX compiler to use for document generation
         """
 
-        super().__init__(i_document         = i_document,
-                         i_project_root_dir = i_project_root_dir,
+        super().__init__(i_project_root_dir = i_project_root_dir,
                          i_compiler         = i_compiler)
 
         self.latex_root_dir = self.root_dir.joinpath('latex')       # TODO constant / improve?
@@ -86,9 +83,16 @@ r"""
                               i_req      : Requirement,
                               i_filename : Optional[Union[str,
                                                           Path]] = None) -> str:
+        """
+            Generate a .tex file (snippet) containing formated LaTeX input for requirement i_req.
+            This file can then be included into a master LaTeX document.
+
+        :param i_req     : Oudini requirement to convert to LaTeX
+        :param i_filename: Filename where to write the snippet (optional)
+        :return          : Generated LaTeX code
+        """
         assert isinstance(i_req,        Requirement)
-        assert isinstance(i_filename,   str)    or \
-               isinstance(i_filename,   Path)   or \
+        assert isinstance(i_filename,   (str, Path))    or \
                i_filename is None
 
         if i_req.validation_strategy is not None:
@@ -142,7 +146,7 @@ r"""
                                                                   constant_value = LatexGenerator.sanitize(v))
 
         if i_filename is not None:
-            self._logger.debug("Writing constants into '{file}'".format(file = i_filename.name))
+            self._logger.debug(f"Writing constants into '{i_filename.name}'")
             with open(i_filename, mode = 'w') as file:
                 file.write(text)
 
@@ -154,8 +158,7 @@ r"""
                            i_filename : Optional[Union[str,
                                                        Path]] = None) -> str:
         assert isinstance(i_glossary,   Glossary)
-        assert isinstance(i_filename,   str)    or \
-               isinstance(i_filename,   Path)   or \
+        assert isinstance(i_filename,   (str, Path))    or \
                i_filename is None
 
         acronyms = ""
@@ -175,32 +178,33 @@ r"""
                                                                     acronyms    = acronyms)
 
         if i_filename is not None:
-            self._logger.debug("Writing glossary into '{file}'".format(file = i_filename.name))
+            self._logger.debug(f"Writing glossary into '{i_filename.name}'")
             with open(i_filename, mode = 'w') as file:
                 file.write(text)
 
         return text
 
     def generate_and_compile(self,
+                             i_document         : Document,
                              i_out_dir          : Union[str, Path],
                              i_clean_before_run : Optional[bool] = True):
-        assert isinstance(i_out_dir, str)   or \
-               isinstance(i_out_dir, Path)
-        assert isinstance(i_clean_before_run, bool)
+        assert isinstance(i_document,           Document)
+        assert isinstance(i_out_dir,            (str, Path))
+        assert isinstance(i_clean_before_run,   bool)
 
         # If requested, delete the output folder first
         if i_clean_before_run:
-            self._logger.info("Deleting '{dir}'".format(dir = i_out_dir))
+            self._logger.info(f"Deleting '{i_out_dir}'")
             shutil.rmtree(i_out_dir, ignore_errors = True)
 
         # Snippet generation is done in the LaTeX / snip folder
-        self.generate_document(i_document    = self.document,
+        self.generate_document(i_document    = i_document,
                                i_root_folder = self.snip_root_dir)
 
         if self.compiler is None:
             raise Exception("No LaTeX compiler specified")
 
-        self.compiler.run(i_document     = self.document,
+        self.compiler.run(i_document     = i_document,
                           i_doc_root_dir = self.latex_root_dir,
                           i_output_dir   = i_out_dir)
 
