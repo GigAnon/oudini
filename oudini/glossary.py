@@ -49,8 +49,7 @@ class Glossary:
         @classmethod
         def from_xml_element(cls,
                              i_elt    : ETree.Element):
-
-            obj = super(Glossary.Acronym, cls).from_xml_element(i_elt)
+            obj = super().from_xml_element(i_elt)
 
             obj.shorthand = i_elt.get(cls.ATTR_SHORTHAND)
             # Note: shorthand may be None
