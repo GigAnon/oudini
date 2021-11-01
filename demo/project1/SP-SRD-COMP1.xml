@@ -28,6 +28,7 @@
         <document internal = "SP-PIDS" source = "path/to/PIDS" />
     </links>
     <glossary>
+        <acronym    uid = "TBD">To Be Defined</acronym>
         <acronym    uid = "srd" shorthand = "SRD">Software Requirements Document</acronym>
         <definition uid = "software">The programs and other operating information used by a computer.</definition>
         <definition uid = "sw-comp1">Software component dedicated to doing stuff with things.</definition>
@@ -74,7 +75,7 @@
                             \item Format a READ_SW_VERSION_ACK response with, in no particular order:
                                 \begin{itemize}
                                     \item The software version (as specified in \req{SRD-REQ-01000}\xspace)
-                                    \item The hardware version
+                                    \item The hardware version (\gls{TBD})
                                 \end{itemize}
                             \item Send the response
                             \item \blindtext[1]

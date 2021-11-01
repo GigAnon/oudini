@@ -161,18 +161,18 @@ r"""
         assert isinstance(i_filename,   (str, Path))    or \
                i_filename is None
 
-        acronyms = ""
-        for a in i_glossary.acronyms.values():
-            assert isinstance(a, Glossary.Acronym)
-            acronyms += LatexGenerator.LATEX_GLOSSARY_ACRONYM_TEMPLATE.format(uid         = a.uid,
-                                                                              description = a.description,
-                                                                              shorthand   = a.shorthand or a.uid)
-
+        acronyms    = ""
         definitions = ""
         for a in i_glossary.definitions.values():
             assert isinstance(a, Glossary.Definition)
-            definitions += LatexGenerator.LATEX_GLOSSARY_DEFINITION_TEMPLATE.format(uid         = a.uid,
-                                                                                    description = a.description)
+
+            if isinstance(a, Glossary.Acronym):
+                acronyms += LatexGenerator.LATEX_GLOSSARY_ACRONYM_TEMPLATE.format(uid         = a.uid,
+                                                                                  description = a.description,
+                                                                                  shorthand   = a.shorthand or a.uid)
+            else:
+                definitions += LatexGenerator.LATEX_GLOSSARY_DEFINITION_TEMPLATE.format(uid         = a.uid,
+                                                                                        description = a.description)
 
         text = LatexGenerator.LATEX_GLOSSARY_GLOBAL_TEMPLATE.format(definitions = definitions,
                                                                     acronyms    = acronyms)

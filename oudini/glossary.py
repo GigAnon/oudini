@@ -6,48 +6,12 @@ import  xml.etree.ElementTree as ETree
 class Glossary:
     TAG_STR = "glossary"
 
-    # TODO factorize Acronym and Definition classes
-    class Acronym:
-        TAG_STR        = "acronym"
-        ATTR_UID       = "uid"
-        ATTR_SHORTHAND = "shorthand"
-
-        def __init__(self):
-            self._logger     = logging.getLogger("%s-%s" %(__name__, type(self).__name__))
-            self.uid         = None
-            self.shorthand   = None
-            self.description = None
-
-        @classmethod
-        def from_xml_element(cls,
-                             i_elt    : ETree.Element):
-            assert isinstance(i_elt, ETree.Element)
-            assert i_elt.tag == cls.TAG_STR
-
-            obj = cls()
-
-            obj.uid         = i_elt.get(cls.ATTR_UID)
-            obj.shorthand   = i_elt.get(cls.ATTR_SHORTHAND)
-            obj.description = i_elt.text
-
-            assert obj.description is not None
-            assert obj.uid is not None
-
-            obj._logger.debug(f"Created '{cls.__name__}' {obj.uid} from XML")
-            return obj
-
-        def __str__(self):
-            return self.uid
-
-        def __repr__(self):
-            return "'%s' ['%s']: '%s'" % (self.uid, self.uid or self.uid, self.description)
-
     class Definition:
         TAG_STR        = "definition"
         ATTR_UID       = "uid"
 
         def __init__(self):
-            self._logger     = logging.getLogger("%s-%s" %(__name__, type(self).__name__))
+            self._logger     = logging.getLogger(f"{__name__}-{type(self).__name__}")
             self.uid         = None
             self.description = None
 
@@ -58,25 +22,47 @@ class Glossary:
             assert i_elt.tag == cls.TAG_STR
 
             obj = cls()
+            obj._logger.debug(f"Creating '{cls.__name__}' {obj.uid} from XML")
 
             obj.uid         = i_elt.get(cls.ATTR_UID)
             obj.description = i_elt.text
 
-            assert obj.description is not None
-            assert obj.uid is not None
+            assert obj.description  is not None
+            assert obj.uid          is not None
 
-            obj._logger.debug(f"Created '{cls.__name__}' {obj.uid} from XML")
             return obj
 
         def __str__(self):
             return self.uid
 
         def __repr__(self):
-            return "'%s': '%s'" % (self.uid, self.description)
+            return f"'{self.uid}': '{self.description}'"
+
+    class Acronym (Definition):
+        TAG_STR        = "acronym"
+        ATTR_SHORTHAND = "shorthand"
+
+        def __init__(self):
+            self.shorthand = None
+            super().__init__()
+
+        @classmethod
+        def from_xml_element(cls,
+                             i_elt    : ETree.Element):
+
+            obj = super(Glossary.Acronym, cls).from_xml_element(i_elt)
+
+            obj.shorthand = i_elt.get(cls.ATTR_SHORTHAND)
+            # Note: shorthand may be None
+            return obj
+
+        def __repr__(self):
+            return f"'{self.uid}' ['{self.shorthand or self.uid}']: '{self.description}'"
+
+    _sub_types = [ Acronym, Definition ]
 
     def __init__(self):
-        self._logger     = logging.getLogger("%s-%s" %(__name__, type(self).__name__))
-        self.acronyms    = {}
+        self._logger     = logging.getLogger(f"{__name__}-{type(self).__name__}")
         self.definitions = {}
 
     def to_xml(self) -> ETree.Element:
@@ -96,21 +82,25 @@ class Glossary:
         obj = cls()
 
         for e in i_elt:
-            if      e.tag == cls.Acronym.TAG_STR:
-                acronym = cls.Acronym.from_xml_element(e)
-                obj.acronyms[acronym.uid] = acronym
-            elif    e.tag == cls.Definition.TAG_STR:
-                definition = cls.Definition.from_xml_element(e)
+            class_ctor = None
+            for def_type in cls._sub_types:
+                if e.tag == def_type.TAG_STR:
+                    class_ctor = def_type
+
+            if class_ctor is not None:
+                definition = class_ctor.from_xml_element(e)
                 obj.definitions[definition.uid] = definition
             else:
-                obj._logger.warning("Ignoring unknown section <%s>" % (e.tag))
-                pass # Ignored tag
-        obj._logger.info("Created glossary (%u acronyms, %u definitions) from XML" % (len(obj.acronyms),
-                                                                                      len(obj.definitions)))
+                obj._logger.warning(f"Ignoring unknown section <{e.tag}>")
+
+        obj._logger.info(f"Created glossary ({len(obj.definitions)} definitions) from XML")
         return obj
 
     def __str__(self):
-        return "%s %s" % (str(self.acronyms), str(self.definitions))
+        return f"{self.definitions}"
 
     def __repr__(self):
-        return "%s\n%s" % (repr(self.acronyms), repr(self.definitions))
+        return f"{self.definitions!r}"
+
+    def __iter__(self):
+        return iter(self.definitions.items())

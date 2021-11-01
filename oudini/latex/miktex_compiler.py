@@ -162,10 +162,10 @@ class MiktexCompiler (Compiler):
 
         # TODO improve
         glossaries_args = [
-                                self.glossaries_bin,
-                                '%s' % (i_docname), # Note: use base name without extensions
-                                '-t', 'makeglossaries-lite.log',
-                               ]
+                            self.glossaries_bin,
+                            f'{i_docname}',
+                            '-t', 'makeglossaries-lite.log',
+                          ]
 
         self._logger.debug("Invoking {bin} in {folder}".format(bin    = self.glossaries_bin,
                                                                folder = str(i_temp_folder)))
