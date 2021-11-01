@@ -1,15 +1,20 @@
 #! python3
 
+import  logging
+import  os
+import  sys
+from    pathlib                 import Path
 import  xml.etree.ElementTree   as ElementTree
+from    timeit import default_timer as timer
+
+# OuDini imports
+# Note: if OuDini is installed as a package, sys.path doesn't need to be modified
+sys.path.append(str(Path().joinpath('..', '..', 'oudini')))
+
 from    document                import Document
 from    latex.latex_generator   import LatexGenerator
 from    latex.miktex_compiler   import MiktexCompiler
 
-import  logging
-import  os
-from    pathlib                 import Path
-
-from timeit import default_timer as timer
 
 
 # Setup logging system
@@ -23,8 +28,7 @@ logging.getLogger("envutils").setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
 
-ROOT_DIR         = Path(__file__).parent.joinpath('..').resolve()
-PROJECT_ROOT_DIR = ROOT_DIR.joinpath(r"demo", r"project1").resolve()
+PROJECT_ROOT_DIR = Path(__file__).parent.resolve()
 
 doc = Document.from_xml(ElementTree.parse(os.path.join(PROJECT_ROOT_DIR, "SP-SRD-COMP1.xml")))
 
