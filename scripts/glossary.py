@@ -81,6 +81,9 @@ class Glossary:
 
     def to_xml(self) -> ETree.Element:
         root = ETree.Element(self.TAG_STR)
+
+        root.text = ' ' # To prevent the generator from generating an empty tag <glossary />
+
         self._logger.warning("Not implemented")
         return root
 

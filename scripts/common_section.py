@@ -7,6 +7,15 @@ from    pathlib                 import Path
 
 
 class CommonSection:
+    """
+        Class for manipulation of the common section of an Oudini document.
+        This section contains data that is typically relevant to the document as a whole, or to all requirements:
+            - Project name and unique identifier
+            - Document name and unique identifier
+            - Authors
+            - Formating templates
+            - Etc.
+    """
     TAG_STR                     = "general"
     REQDISPLAYFORMAT_TAG_STR    = "reqdisplayformat"
     REQFILEFORMAT_TAG_STR       = "reqfileformat"
@@ -151,23 +160,23 @@ class CommonSection:
                 obj._logger.debug("Found requirement display format section (<%s>)", cls.REQDISPLAYFORMAT_TAG_STR)
                 obj.req_display_format = e.text
 
-            elif    e.tag == CommonSection.REQFILEFORMAT_TAG_STR:
-                obj._logger.debug("Found requirement file format section (<%s>)", CommonSection.REQFILEFORMAT_TAG_STR)
+            elif    e.tag == cls.REQFILEFORMAT_TAG_STR:
+                obj._logger.debug("Found requirement file format section (<%s>)", cls.REQFILEFORMAT_TAG_STR)
                 obj.req_file_format = e.text
 
-            elif    e.tag == CommonSection.Project.TAG_STR:
-                obj._logger.debug("Found project info section (<%s>)", CommonSection.Project.TAG_STR)
-                obj.project = CommonSection.Project.from_xml_element(e)
+            elif    e.tag == cls.Project.TAG_STR:
+                obj._logger.debug("Found project info section (<%s>)", cls.Project.TAG_STR)
+                obj.project = cls.Project.from_xml_element(e)
                 obj._logger.debug(repr(obj.project))
 
-            elif    e.tag == CommonSection.Title.TAG_STR:
-                obj._logger.debug("Found document title info section (<%s>)", CommonSection.Title.TAG_STR)
-                obj.title = CommonSection.Title.from_xml_element(e)
+            elif    e.tag == cls.Title.TAG_STR:
+                obj._logger.debug("Found document title info section (<%s>)", cls.Title.TAG_STR)
+                obj.title = cls.Title.from_xml_element(e)
                 obj._logger.debug(repr(obj.title))
 
-            elif    e.tag == CommonSection.People.TAG_STR:
-                obj._logger.debug("Found people info section (<%s>)", CommonSection.People.TAG_STR)
-                obj.people = CommonSection.People.from_xml_element(e)
+            elif    e.tag == cls.People.TAG_STR:
+                obj._logger.debug("Found people info section (<%s>)", cls.People.TAG_STR)
+                obj.people = cls.People.from_xml_element(e)
 
             else:
                 obj._logger.warning("Ignoring unknown section <%s>" % (e.tag))
