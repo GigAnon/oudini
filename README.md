@@ -1,4 +1,19 @@
-# What is OuDini ?
+# Quick install / setup
+
+## LaTeX generation demo
+
+- [WIP] Install a LaTeX generator (ATM MikTeX + pdflatex is supported)
+
+- Download the repository
+- Open the demo project in demo/project1 folder
+- [WIP] in main.py, edit the path to your LaTeX generator
+- Run main.py
+
+Note: if using MikTeX, additionnal LaTeX packages will have to be installed. [WIP] ATM MikTeX installer is disabled when running the MiktexCompiler class - run the pdflatex command without the -disable-installer option.
+
+
+# OuDini
+## What is OuDini ?
 
 OuDini is a Python framework designed to allow a no-nonesense management of complex functionnal requirement specifications:
 - Redaction
@@ -8,7 +23,7 @@ OuDini is a Python framework designed to allow a no-nonesense management of comp
 - Maintenance
 - [TBD] Reviews
 
-# Why OuDini ? 
+## Why OuDini ? 
 
 OuDini was born from the frustration created by proprietary tools such as IBM Doors. Bloated, expensive, awkward to use and difficult to extend, those tools are often a poor solution to the problems usually seen in large projects where specifications are layered into dozen of documents:
 - Each specification document spans hundred of requirements
