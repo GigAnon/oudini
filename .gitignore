@@ -1,2 +1,5 @@
 *.pyc
 */out/
+
+# macOS
+.DS_STORE
