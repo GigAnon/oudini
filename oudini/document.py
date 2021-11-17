@@ -1,18 +1,19 @@
 #! python3
-import  logging
+from    utils.logobj            import LogObj
 import  xml.etree.ElementTree   as ETree
 from    requirements_set        import RequirementsSet
 from    common_section          import CommonSection
 from    glossary                import Glossary
 
 
-class Document:
+class Document (LogObj):
 
     def __init__(self,
                  i_glossary_class       : Glossary        = Glossary,
                  i_common_section_class : CommonSection   = CommonSection,
                  i_req_set_class        : RequirementsSet = RequirementsSet):
-        self._logger = logging.getLogger("%s-%s" %(__name__, type(self).__name__))
+        LogObj.__init__(self)
+
         self.root_name  = "document"
 
         self.common     = None

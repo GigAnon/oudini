@@ -1,17 +1,17 @@
 #! python3
-import  logging
-import  xml.etree.ElementTree as ETree
+from    utils.logobj            import LogObj
+import  xml.etree.ElementTree   as ETree
 
 
-class Glossary:
+class Glossary (LogObj):
     TAG_STR = "glossary"
 
-    class Definition:
+    class Definition (LogObj):
         TAG_STR        = "definition"
         ATTR_UID       = "uid"
 
         def __init__(self):
-            self._logger     = logging.getLogger(f"{__name__}-{type(self).__name__}")
+            LogObj.__init__(self)
             self.uid         = None
             self.description = None
 
@@ -61,7 +61,7 @@ class Glossary:
     _sub_types = [ Acronym, Definition ]
 
     def __init__(self):
-        self._logger     = logging.getLogger(f"{__name__}-{type(self).__name__}")
+        LogObj.__init__(self)
         self.definitions = {}
 
     def to_xml(self) -> ETree.Element:
@@ -96,7 +96,7 @@ class Glossary:
         return obj
 
     def __str__(self):
-        return f"{self.definitions}"
+        return f"{self.definitions!s}"
 
     def __repr__(self):
         return f"{self.definitions!r}"

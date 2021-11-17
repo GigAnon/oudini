@@ -1,5 +1,5 @@
 #! python3
-import  logging
+from    utils.logobj        import LogObj
 import  os
 from    typing              import Optional
 from    typing              import Union
@@ -12,7 +12,7 @@ from    glossary            import Glossary
 from    document            import Document
 
 
-class Generator:
+class Generator (LogObj):
     """
         Parent class for render-code snippet generation from requirements, common sections, glossaries, etc.
         This class must be derived for specific rendering solutions (i.e. LaTeX, HTML, OpenXML...).
@@ -33,8 +33,8 @@ class Generator:
         """
         assert isinstance(i_project_root_dir, (str, Path))
         assert isinstance(i_compiler, Compiler) or i_compiler is None
+        LogObj.__init__(self)
 
-        self._logger  = logging.getLogger("%s-%s" %(__name__, type(self).__name__))
         self.root_dir = Path(i_project_root_dir).resolve()
         # self.document = i_document # Reference, not a copy
         self.compiler = i_compiler # Reference, not a copy

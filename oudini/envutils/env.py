@@ -1,10 +1,13 @@
 #! python3
-import logging
+
+from    utils.logobj    import LogObj
 import  os
 import  contextlib
+from    pathlib         import Path
+from    typing          import Optional
 
 
-class Env:
+class Env (LogObj):
     """
         TODO
 
@@ -13,7 +16,8 @@ class Env:
     def __init__(self,
                  *remove,
                  **update):
-        self._logger = logging.getLogger("%s-%s" %(__name__, type(self).__name__))
+        LogObj.__init__(self)
+
         self._remove = remove
         self._update = update
 
@@ -22,11 +26,11 @@ class Env:
         self._logger.debug("  ADDED/MODIFIED ENVARS %s" % (repr(self._update)))
 
     @contextlib.contextmanager
-    def setup(self):
+    def setup(self,
+              i_cwd : Optional[Path] = None) -> None:
         """
-        Temporarily updates the ``os.environ`` dictionary in-place.
-        The ``os.environ`` dictionary is updated in-place so that the modification
-        is sure to work in all situations.
+            Temporarily updates the environment variables and the current working directory.
+        :param i_cwd: Current working directory to switch to (optional)
         """
         env = os.environ
         update = self._update or {}
@@ -39,6 +43,9 @@ class Env:
         # Environment variables and values to remove on exit.
         remove_after = frozenset(k for k in update if k not in env)
 
+        # Save the 'old' current working directory
+        old_cd = os.getcwd()
+
         try:
             env.update(update)
             [env.pop(k, None) for k in remove]
@@ -46,8 +53,15 @@ class Env:
             self._logger.info("Setting up environment")
             self._logger.debug(env)
 
+            if i_cwd is not None:
+                os.chdir(str(i_cwd))
+                self._logger.debug(f"CWD : {i_cwd!r}")
+
             yield
         finally:
             self._logger.info("Reseting environment")
             env.update(update_after)
             [env.pop(k) for k in remove_after]
+
+            if i_cwd is not None:
+                os.chdir(str(old_cd))

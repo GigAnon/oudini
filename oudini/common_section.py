@@ -1,12 +1,12 @@
 #! python3
-import  logging
+from    utils.logobj            import LogObj
 import  xml.etree.ElementTree   as ETree
 from    typing                  import Optional
 from    typing                  import Union
 from    pathlib                 import Path
 
 
-class CommonSection:
+class CommonSection (LogObj):
     """
         Class for manipulation of the common section of an Oudini document.
         This section contains data that is typically relevant to the document as a whole, or to all requirements:
@@ -62,7 +62,7 @@ class CommonSection:
     class Title (_PT):
         TAG_STR = "title"
 
-    class People:
+    class People (LogObj):
         TAG_STR              = "people"
         PERSON_TAG_STR       = "person"
         PERSON_ATTR_ROLE_STR = "role"
@@ -89,7 +89,7 @@ class CommonSection:
                 return self.__str__()
 
         def __init__(self):
-            self._logger = logging.getLogger("%s-%s" % (__name__, type(self).__name__))
+            LogObj.__init__(self)
             self.list = []
 
         def to_xml(self) -> ETree.Element:
@@ -128,7 +128,7 @@ class CommonSection:
             return repr(self.list)
 
     def __init__(self):
-        self._logger = logging.getLogger("%s-%s" % (__name__, type(self).__name__))
+        LogObj.__init__(self)
 
         self.project                = None
         self.title                  = None
@@ -157,32 +157,32 @@ class CommonSection:
 
         for e in i_elt:
             if      e.tag == cls.REQDISPLAYFORMAT_TAG_STR:
-                obj._logger.debug("Found requirement display format section (<%s>)", cls.REQDISPLAYFORMAT_TAG_STR)
+                obj._logger.debug(f"Found requirement display format section (<{cls.REQDISPLAYFORMAT_TAG_STR}>)")
                 obj.req_display_format = e.text
 
             elif    e.tag == cls.REQFILEFORMAT_TAG_STR:
-                obj._logger.debug("Found requirement file format section (<%s>)", cls.REQFILEFORMAT_TAG_STR)
+                obj._logger.debug(f"Found requirement file format section (<{cls.REQFILEFORMAT_TAG_STR}>)")
                 obj.req_file_format = e.text
 
             elif    e.tag == cls.Project.TAG_STR:
-                obj._logger.debug("Found project info section (<%s>)", cls.Project.TAG_STR)
+                obj._logger.debug(f"Found project info section (<{cls.Project.TAG_STR}>)")
                 obj.project = cls.Project.from_xml_element(e)
                 obj._logger.debug(repr(obj.project))
 
             elif    e.tag == cls.Title.TAG_STR:
-                obj._logger.debug("Found document title info section (<%s>)", cls.Title.TAG_STR)
+                obj._logger.debug(f"Found document title info section (<{cls.Title.TAG_STR}>)")
                 obj.title = cls.Title.from_xml_element(e)
                 obj._logger.debug(repr(obj.title))
 
             elif    e.tag == cls.People.TAG_STR:
-                obj._logger.debug("Found people info section (<%s>)", cls.People.TAG_STR)
+                obj._logger.debug(f"Found people info section (<{cls.People.TAG_STR}>)")
                 obj.people = cls.People.from_xml_element(e)
 
             else:
-                obj._logger.warning("Ignoring unknown section <%s>" % (e.tag))
+                obj._logger.warning(f"Ignoring unknown section <{e.tag}>")
                 pass # Ignored tag
 
-        obj._logger.debug("Created from XML : %s" % (repr(obj)))
+        obj._logger.debug(f"Created from XML : {obj!r}")
 
         return obj
 
@@ -204,7 +204,7 @@ class CommonSection:
         return Path(i_root_folder).joinpath(format_str.format())
 
     def __str__(self):
-        return "'%s' - '%s' [%s]" % (str(self.project), str(self.title), str(self.people))
+        return f"'{self.project!s}' - '{self.title!s}' [{self.people!s}]"
 
     def __repr__(self):
-        return "'%s' - '%s' [%s]" % (repr(self.project), repr(self.title), repr(self.people))
+        return f"'{self.project!r}' - '{self.title!r}' [{self.people!r}]"

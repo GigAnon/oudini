@@ -1,14 +1,16 @@
 #! python3
-import  logging
+
+from    utils.logobj            import LogObj
+
 import  xml.etree.ElementTree   as ETree
 from    copy                    import deepcopy
-from    typing                  import Optional
-from    typing                  import Union
+from    enum                    import Enum
+from    typing                  import Optional, Union
 from    pathlib                 import Path
 from    common_section          import CommonSection
 
 
-class Requirement:
+class Requirement (LogObj):
     TAG_STR             = "req"
     ATTR_ID_STR         = "id"
     ATTR_SHORT_DESC_STR = "shortdesc"
@@ -19,15 +21,22 @@ class Requirement:
 
     VALIDATION_TAG_STR = "validation"
 
+    class ValidationStrategy (Enum):
+        Inspection      = "I"
+        Analysis        = "A"
+        Demonstration   = "D"
+        Test            = "T"
+
     def __init__(self,
                  i_common : Optional[CommonSection] = None):
         assert isinstance(i_common, CommonSection) or i_common is None
-        self._logger             = logging.getLogger("%s-%s" % (__name__, type(self).__name__))
+        LogObj.__init__(self)
+
         self.id                  = None
         self.desc                = ""
         self.text                = ""
         self.validation_strategy = None
-        self.common = i_common # By reference
+        self.common              = i_common # By reference
 
     def __bool__(self):
         return self.id is not None
@@ -76,7 +85,7 @@ class Requirement:
             elif    e.tag == obj.LINKS_TAG_STR:
                 pass # TODO LINKS
             elif    e.tag == obj.VALIDATION_TAG_STR:
-                obj.validation_strategy = e.text # TODO ENUM
+                obj.validation_strategy = cls.ValidationStrategy(e.text)
             else:
                 obj._logger.warning("<%s> tag ignored" % (e.tag))
                 pass # Ignored tag

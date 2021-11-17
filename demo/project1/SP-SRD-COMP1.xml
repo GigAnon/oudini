@@ -82,7 +82,7 @@
                             \item Log an event eCOMMAND_SENT
                         \end{enumerate}
                     </text>
-                    <validation>Test</validation>
+                    <validation>T</validation>
                     <satisfies>
                         <link id = "SP-PIDS-REQ-10000" source = "SP-PIDS" />
                     </satisfies>
@@ -91,7 +91,7 @@
                 <req id        = "80000"
                      shortdesc = "Placeholder">
                     <text>Mon super texte d'exigence</text>
-                    <validation>Analysis</validation>
+                    <validation>A</validation>
                 </req>
             </sec>
         </sec>

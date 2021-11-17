@@ -1,12 +1,12 @@
 #! python3
 import  copy
-import  logging
-from    pathlib import Path
 import  os
-from    typing import Union
+from    utils.logobj    import LogObj
+from    pathlib         import Path
+from    typing          import Union
 
 
-class EnvarPath:
+class EnvarPath (LogObj):
     """
     System-independant class for convenient manipulation of the PATH environment variable.
     """
@@ -16,30 +16,29 @@ class EnvarPath:
         """
         Constructor
         """
-        self._logger = logging.getLogger("%s-%s" %(__name__, type(self).__name__))
-        self._path   = ""
+        LogObj.__init__(self)
+        self._path   = "" # TODO: make it a list
 
     @classmethod
     def from_environ(cls):
         """
             Create an envutils.Path object from the PATH variable in the current environment.
-        :return:
         """
 
         obj = cls()
         obj._path = os.environ[EnvarPath.PATH_ENVAR_NAME]
 
-        obj._logger.debug("Created instance - PATH = '%s'" % (obj._path))
+        obj._logger.debug(f"Created instance - PATH = '{obj._path}'")
         return obj
 
     def append(self,
-               i_item : Union[str, Path]):
+               i_item : Union[str, Path, 'EnvarPath']):
         """
         TODO
         :param i_item:
         :return:
         """
-        self._logger.debug("Appended: '%s'" % (str(i_item)))
+        self._logger.debug(f"Appended: '{str(i_item)}'")
         return self._concatenate(i_format = "{path_str}{separator}{item}",
                                  i_item   = str(i_item))
 
@@ -50,7 +49,7 @@ class EnvarPath:
         :param i_item:
         :return:
         """
-        self._logger.debug("Prepended: '%s'" % (str(i_item)))
+        self._logger.debug(f"Prepended: '{str(i_item)}'")
         return self._concatenate(i_format = "{item}{separator}{path_str}",
                                  i_item   = str(i_item))
 
@@ -70,9 +69,7 @@ class EnvarPath:
         :return: 
         """
         assert isinstance(i_format, str)
-        assert isinstance(i_item, str)  or\
-               isinstance(i_item, Path) or\
-               isinstance(i_item, EnvarPath)
+        assert isinstance(i_item, (str, Path, EnvarPath))
 
         if (self._path):
             self._path = i_format.format(separator = os.pathsep,

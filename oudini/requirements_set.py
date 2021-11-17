@@ -1,14 +1,14 @@
 #! python3
-import  logging
+from    utils.logobj            import LogObj
 import  xml.etree.ElementTree   as ETree
-from collections                import OrderedDict
+from    collections             import OrderedDict
 from    typing                  import Optional
 from    typing                  import Union
 from    requirement             import Requirement
 from    common_section          import CommonSection
 
 
-class RequirementsSet:
+class RequirementsSet (LogObj):
     TAG_STR = "requirements"
 
     SECTION_TAG_STR = "sec"
@@ -17,7 +17,8 @@ class RequirementsSet:
                  i_common    : Optional[CommonSection] = None,
                  i_req_class : Optional[Requirement]   = Requirement):
         assert isinstance(i_common, CommonSection) or i_common is None
-        self._logger    = logging.getLogger("%s-%s" % (__name__, type(self).__name__))
+        LogObj.__init__(self)
+
         self._req_class = i_req_class
         self.reqs       = OrderedDict()
         self.common     = i_common # By reference
@@ -41,7 +42,7 @@ class RequirementsSet:
         # Recursively walk through sections to flatten out the requirements
         # (depth should be reasonable)
         obj._walk_xml_add_reqs(i_section = i_elt)
-        obj._logger.debug("Created from XML (%u reqs)" % (len(obj.reqs)))
+        obj._logger.debug(f"Created from XML ({len(obj.reqs)} reqs)")
 
         return obj
 
@@ -73,9 +74,9 @@ class RequirementsSet:
     def __repr__(self):
         s = ""
         if len(self.reqs) > 0:
-            s += "%u requirements in set:\n" % (len(self.reqs))
+            s += f"{len(self.reqs)} requirements in set:\n"
             for _, v in self.reqs.items():
-                s += "%s\n" % (repr(v))
+                s += f"{v!r}\n"
         else:
             s += "No requirements in set"
         return s
