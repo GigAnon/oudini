@@ -32,6 +32,15 @@ class Glossary (LogObj):
 
             return obj
 
+        def to_xml(self) -> ETree.Element:
+            elt = ETree.Element(self.TAG_STR)
+
+            elt.attrib[self.ATTR_UID] = self.uid
+            elt.text = self.description
+
+            return elt
+
+
         def __str__(self):
             return self.uid
 
@@ -55,6 +64,14 @@ class Glossary (LogObj):
             # Note: shorthand may be None
             return obj
 
+        def to_xml(self) -> ETree.Element:
+            elt = super().to_xml()
+
+            if self.shorthand:
+                elt.attrib[self.ATTR_SHORTHAND] = self.shorthand
+
+            return elt
+
         def __repr__(self):
             return f"'{self.uid}' ['{self.shorthand or self.uid}']: '{self.description}'"
 
@@ -69,7 +86,9 @@ class Glossary (LogObj):
 
         root.text = ' ' # To prevent the generator from generating an empty tag <glossary />
 
-        self._logger.warning("Not implemented")
+        for k, v in self.definitions.items():
+            root.append(v.to_xml())
+
         return root
 
     @classmethod

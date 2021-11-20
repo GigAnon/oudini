@@ -59,7 +59,7 @@ class Requirement (LogObj):
 
         if (self.validation_strategy):
             ETree.SubElement(elt,
-                             self.VALIDATION_TAG_STR).text = self.validation_strategy
+                             self.VALIDATION_TAG_STR).text = self.validation_strategy.value
 
         # TODO LINKS
 

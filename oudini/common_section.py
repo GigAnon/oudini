@@ -144,6 +144,14 @@ class CommonSection (LogObj):
             if e is not None:
                 root.append(e.to_xml())
 
+        if self.req_display_format:
+            ETree.SubElement(root,
+                             self.REQDISPLAYFORMAT_TAG_STR).text = self.req_display_format
+
+        if self.req_file_format:
+            ETree.SubElement(root,
+                             self.REQFILEFORMAT_TAG_STR).text = self.req_file_format
+
         return root
 
     @classmethod
