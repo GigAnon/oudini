@@ -91,9 +91,8 @@ r"""
         :param i_filename: Filename where to write the snippet (optional)
         :return          : Generated LaTeX code
         """
-        assert isinstance(i_req,        Requirement)
-        assert isinstance(i_filename,   (str, Path))    or \
-               i_filename is None
+        assert isinstance(i_req,        Requirement),             f"type(i_req) is {type(i_req)}"
+        assert isinstance(i_filename,   (str, Path, type(None))), f"type(i_filename) is {type(i_filename)}"
 
         if i_req.validation_strategy is not None:
             validation_strategy = LatexGenerator.LATEX_VALIDATION_STRATEGY_TEMPLATE.format(text = i_req.validation_strategy)
@@ -127,10 +126,8 @@ r"""
         :param i_filename: Name for the .tex file the constants will be defined into. If none is provided, perform a dry run.
         :return: The content of the generated LaTeX code
         """
-        assert isinstance(i_common,     CommonSection)
-        assert isinstance(i_filename,   str)    or \
-               isinstance(i_filename,   Path)   or \
-               i_filename is None
+        assert isinstance(i_common,     CommonSection),           f"type(i_common) is {type(i_common)}"
+        assert isinstance(i_filename,   (str, Path, type(None))), f"type(i_filename) is {type(i_filename)}"
 
         constants = {
                         'projectTitlePretty'     : repr(i_common.project) if i_common.project else "UNDEFINED PROJECT",
@@ -157,14 +154,13 @@ r"""
                            i_glossary : Glossary,
                            i_filename : Optional[Union[str,
                                                        Path]] = None) -> str:
-        assert isinstance(i_glossary,   Glossary)
-        assert isinstance(i_filename,   (str, Path))    or \
-               i_filename is None
+        assert isinstance(i_glossary,   Glossary),                f"type(i_glossary) is {type(i_glossary)}"
+        assert isinstance(i_filename,   (str, Path, type(None))), f"type(i_filename) is {type(i_filename)}"
 
         acronyms    = ""
         definitions = ""
         for a in i_glossary.definitions.values():
-            assert isinstance(a, Glossary.Definition)
+            assert isinstance(a, Glossary.Definition), f"type(a) is {type(a)}"
 
             if isinstance(a, Glossary.Acronym):
                 acronyms += LatexGenerator.LATEX_GLOSSARY_ACRONYM_TEMPLATE.format(uid         = a.uid,
@@ -188,9 +184,9 @@ r"""
                              i_document         : Document,
                              i_out_dir          : Union[str, Path],
                              i_clean_before_run : Optional[bool] = True):
-        assert isinstance(i_document,           Document)
-        assert isinstance(i_out_dir,            (str, Path))
-        assert isinstance(i_clean_before_run,   bool)
+        assert isinstance(i_document,           Document),      f"type(i_document) is {type(i_document)}"
+        assert isinstance(i_out_dir,            (str, Path)),   f"type(i_document) is {type(i_out_dir)}"
+        assert isinstance(i_clean_before_run,   bool),          f"type(i_clean_before_run) is {type(i_clean_before_run)}"
 
         # If requested, delete the output folder first
         if i_clean_before_run:

@@ -9,6 +9,8 @@ class LogObj:
     def __init__(self,
                  i_logger_name  : Optional[str] = None):
         if i_logger_name is not None:
+            assert isinstance(i_logger_name, str), f"type(i_logger_name) is {type(i_logger_name)}"
+
             # If a logger name was given, use that
             logger_name = i_logger_name
         else:

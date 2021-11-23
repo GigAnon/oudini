@@ -32,6 +32,8 @@ class Env (LogObj):
             Temporarily updates the environment variables and the current working directory.
         :param i_cwd: Current working directory to switch to (optional)
         """
+        assert isinstance(i_cwd, (Path, type(None))), f"type(i_cwd) is {type(i_cwd)}"
+
         env = os.environ
         update = self._update or {}
         remove = self._remove or []

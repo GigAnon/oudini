@@ -28,8 +28,8 @@ class CommonSection (LogObj):
         def __init__(self,
                      i_internal_name: str,
                      i_pretty_name  : Optional[str] = None):
-            assert isinstance(i_internal_name,  str)
-            assert isinstance(i_pretty_name,    str) or i_pretty_name is None
+            assert isinstance(i_internal_name,  str),               f"type(i_internal_name) is {type(i_internal_name)}"
+            assert isinstance(i_pretty_name,    (str, type(None))), f"type(i_pretty_name) is {type(i_pretty_name)}"
 
             self.internal       = i_internal_name
             self.pretty         = i_pretty_name
@@ -45,9 +45,9 @@ class CommonSection (LogObj):
         @classmethod
         def from_xml_element(cls,
                              i_elt : ETree.Element):
-            assert isinstance(i_elt, ETree.Element)
-            assert i_elt.tag == cls.TAG_STR
-            return cls(i_internal_name = i_elt.get(cls.ATTR_INTERNAL_STR,  default = None),
+            assert isinstance(i_elt, ETree.Element), f"type(i_elt) is {type(i_elt)}"
+            assert i_elt.tag == cls.TAG_STR,         f"i_elt.tag is {i_elt.tag}"
+            return cls(i_internal_name = i_elt.get(cls.ATTR_INTERNAL_STR, default = None),
                        i_pretty_name   = i_elt.get(cls.ATTR_PRETTY_STR,   default = None))
 
         def __str__(self):
@@ -71,8 +71,8 @@ class CommonSection (LogObj):
             def __init__(self,
                          i_name: str,
                          i_role: str):
-                assert isinstance(i_name, str)
-                assert isinstance(i_role, str)
+                assert isinstance(i_name, str), f"type(i_name) is {type(i_name)}"
+                assert isinstance(i_role, str), f"type(i_role) is {type(i_role)}"
                 self.name = i_name
                 self.role = i_role
 
@@ -83,7 +83,7 @@ class CommonSection (LogObj):
                 return elt
 
             def __str__(self):
-                return "'%s' ('%s')" % (self.name, self.role)
+                return f"'{self.name}' ('{self.role}')"
 
             def __repr__(self):
                 return self.__str__()
@@ -101,8 +101,8 @@ class CommonSection (LogObj):
         @classmethod
         def from_xml_element(cls,
                              i_elt : ETree.Element):
-            assert isinstance(i_elt, ETree.Element)
-            assert i_elt.tag == cls.TAG_STR
+            assert isinstance(i_elt, ETree.Element), f"type(i_elt) is {type(i_elt)}"
+            assert i_elt.tag == cls.TAG_STR,         f"i_elt.tag is {i_elt.tag}"
 
             obj = cls()
 
@@ -110,9 +110,7 @@ class CommonSection (LogObj):
                 if      e.tag == cls.PERSON_TAG_STR:
                     obj.list.append(CommonSection.People.Elt(i_name = e.text.strip(),
                                                              i_role = e.get(cls.PERSON_ATTR_ROLE_STR).strip()))
-                    obj._logger.debug("Section (<%s>) : '%s' ('%s')", cls.PERSON_TAG_STR,
-                                                                      obj.list[-1].name,
-                                                                      obj.list[-1].role)
+                    obj._logger.debug(f"Section (<{cls.PERSON_TAG_STR}>) : '{obj.list[-1].name}' ('{obj.list[-1].role}')")
                 else:
                     obj._logger.warning(f"Ignoring unknown section <{e.tag}>")
                     pass # Ignored tag
@@ -157,8 +155,8 @@ class CommonSection (LogObj):
     @classmethod
     def from_xml_element(cls,
                          i_elt : ETree.Element):
-        assert isinstance(i_elt, ETree.Element)
-        assert i_elt.tag == cls.TAG_STR
+        assert isinstance(i_elt, ETree.Element), f"type(i_elt) is {type(i_elt)}"
+        assert i_elt.tag == cls.TAG_STR,         f"i_elt.tag is {i_elt.tag}"
 
         obj = cls()
         obj._logger.debug(f"Instanciating '{cls.__name__}'")
@@ -198,9 +196,8 @@ class CommonSection (LogObj):
                                        i_root_folder     : Optional[Union[str,
                                                                     Path]] = Path(),
                                        i_fallback_format : Optional[str] = None):
-        assert isinstance(i_root_folder,     str) or \
-               isinstance(i_root_folder,     Path)
-        assert isinstance(i_fallback_format, str) or i_fallback_format is None
+        assert isinstance(i_root_folder,     (str, Path)),       f"type(i_root_folder) is {type(i_root_folder)}"
+        assert isinstance(i_fallback_format, (str, type(None))), f"type(i_fallback_format) is {type(i_fallback_format)}"
 
         if      self.constants_file_format is not None:
             format_str = self.constants_file_format

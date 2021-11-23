@@ -23,10 +23,9 @@ class MiktexCompiler (Compiler):
                                                    Path]] = None,
                  i_pdflatex_bin   : [str] = DEFAULT_PDFLATEX_BIN,
                  i_glossaries_bin : [str] = DEFAULT_GLOSSARIES_BIN):
-        assert isinstance(i_miktex_bin_dir, (str, Path)) or \
-               i_miktex_bin_dir is None
-        assert isinstance(i_pdflatex_bin,   str)
-        assert isinstance(i_glossaries_bin, str)
+        assert isinstance(i_miktex_bin_dir, (str, Path, type(None))), f"type(i_miktex_bin_dir) is {type(i_miktex_bin_dir)}"
+        assert isinstance(i_pdflatex_bin,   str),                     f"type(i_pdflatex_bin) is {type(i_pdflatex_bin)}"
+        assert isinstance(i_glossaries_bin, str),                     f"type(i_glossaries_bin) is {type(i_glossaries_bin)}"
 
         super().__init__()
 
@@ -48,18 +47,16 @@ class MiktexCompiler (Compiler):
         self.glossaries_env = envutils.Env(PATH = str(envar_path))
 
         self._logger.info("Created MikTex compiler")
-        self._logger.debug(f"MikTex bin dir : {self.miktex_bin_dir}")
+        self._logger.debug(f"MikTex bin dir : '{self.miktex_bin_dir}'")
 
 
     def run(self,
             i_doc_root_dir: Union[str, Path],
             i_output_dir  : Union[str, Path],
             i_document    : Optional[Document]) -> None:
-        assert isinstance(i_document, Document) or i_document is None
-        assert isinstance(i_doc_root_dir, str) or \
-               isinstance(i_doc_root_dir, Path)
-        assert isinstance(i_output_dir, str) or \
-               isinstance(i_output_dir, Path)
+        assert isinstance(i_document,     (Document, type(None))), f"type(i_document) is {type(i_document)}"
+        assert isinstance(i_doc_root_dir, (str, Path)),            f"type(i_doc_root_dir) is {type(i_doc_root_dir)}"
+        assert isinstance(i_output_dir,   (str, Path)),            f"type(i_output_dir) is {type(i_output_dir)}"
 
         if isinstance(i_output_dir, str):
             i_output_dir = Path(i_output_dir)
@@ -85,21 +82,21 @@ class MiktexCompiler (Compiler):
             self._logger.error(f"Could not delete '{output_file}'")
             pass
 
-        self._logger.info(f"[1/3] Running {self.pdflatex_bin}")
+        self._logger.info(f"[1/3] Running '{self.pdflatex_bin}'")
         self._invoke_pdflatex(i_latex_folder = i_doc_root_dir,
                               i_temp_folder  = output_tmp_dir,
                               i_docname      = LATEX_MAIN_DOC_NAME)
 
-        self._logger.info(f"[1/1] Running {self.glossaries_bin}")
+        self._logger.info(f"[1/1] Running '{self.glossaries_bin}'")
         self._invoke_makeglossaries(i_temp_folder  = output_tmp_dir,
                                     i_docname      = LATEX_MAIN_DOC_NAME)
 
-        self._logger.info(f"[2/3] Running {self.pdflatex_bin}")
+        self._logger.info(f"[2/3] Running '{self.pdflatex_bin}'")
         self._invoke_pdflatex(i_latex_folder = i_doc_root_dir,
                               i_temp_folder  = output_tmp_dir,
                               i_docname      = LATEX_MAIN_DOC_NAME)
 
-        self._logger.info(f"[3/3] Running {self.pdflatex_bin}")
+        self._logger.info(f"[3/3] Running '{self.pdflatex_bin}'")
         self._invoke_pdflatex(i_latex_folder = i_doc_root_dir,
                               i_temp_folder  = output_tmp_dir,
                               i_docname      = LATEX_MAIN_DOC_NAME)
@@ -112,8 +109,9 @@ class MiktexCompiler (Compiler):
                          i_latex_folder : Path,
                          i_temp_folder  : Path,
                          i_docname      : str):
-        assert isinstance(i_temp_folder, Path)
-        assert isinstance(i_docname,     str)
+        assert isinstance(i_latex_folder, Path), f"type(i_latex_folder) is {type(i_latex_folder)}"
+        assert isinstance(i_temp_folder,  Path), f"type(i_temp_folder) is {type(i_temp_folder)}"
+        assert isinstance(i_docname,      str),  f"type(i_docname) is {type(i_docname)}"
 
         # TODO improve
         pdflatex_args = [
@@ -125,9 +123,8 @@ class MiktexCompiler (Compiler):
                             f'{i_docname}.tex',
                         ]
 
-        self._logger.debug("Invoking {bin} in {folder}".format(bin    = self.pdflatex_bin,
-                                                               folder = str(i_latex_folder)))
-        self._logger.debug("Args: %s" % (repr(pdflatex_args)))
+        self._logger.debug(f"Invoking '{self.pdflatex_bin}' in {i_latex_folder}")
+        self._logger.debug(f"Args: {pdflatex_args!r}")
 
         # Switch the execution environment for pdflatex
         with self.pdflatex_env.setup(i_cwd = i_latex_folder):
@@ -145,16 +142,17 @@ class MiktexCompiler (Compiler):
                         stderr = stderr.decode('utf8')
                         print("\n\n\nSTDERR: \n%s" % stderr)
 
-                    self._logger.critical("Invokation of {bin} failed".format(bin = self.pdflatex_bin))
-                    raise RuntimeError("Invokation of {bin} failed".format(bin = self.pdflatex_bin))
+                    self._logger.critical(f"Invokation of '{self.pdflatex_bin}' failed")
+                    raise RuntimeError(f"Invokation of '{self.pdflatex_bin}' failed")
                 else:
-                    self._logger.debug("Invokation of {bin} successfull".format(bin = self.pdflatex_bin))
+                    self._logger.debug(f"Invokation of '{self.pdflatex_bin}' successfull")
+
 
     def _invoke_makeglossaries(self,
                                i_temp_folder  : Path,
                                i_docname      : str):
-        assert isinstance(i_temp_folder, Path)
-        assert isinstance(i_docname,     str)
+        assert isinstance(i_temp_folder, Path), f"type(i_temp_folder) is {type(i_temp_folder)}"
+        assert isinstance(i_docname,     str),  f"type(i_docname) is {type(i_docname)}"
 
         # TODO improve
         glossaries_args = [
@@ -163,9 +161,8 @@ class MiktexCompiler (Compiler):
                             '-t', 'makeglossaries-lite.log',
                           ]
 
-        self._logger.debug("Invoking {bin} in {folder}".format(bin    = self.glossaries_bin,
-                                                               folder = str(i_temp_folder)))
-        self._logger.debug("Args: %s" % (repr(glossaries_args)))
+        self._logger.debug(f"Invoking {self.glossaries_bin} in {i_temp_folder}")
+        self._logger.debug(f"Args: {glossaries_args!r}")
 
         # Switch the execution environment for pdflatex
         with self.glossaries_env.setup():
@@ -184,7 +181,7 @@ class MiktexCompiler (Compiler):
                         stderr = stderr.decode('utf8')
                         print("\n\n\nSTDERR: \n%s" % stderr)
 
-                    self._logger.critical("Invokation of {bin} failed".format(bin = self.glossaries_bin))
-                    raise RuntimeError("Invokation of {bin} failed".format(bin = self.glossaries_bin))
+                    self._logger.critical(f"Invokation of '{self.glossaries_bin}' failed")
+                    raise RuntimeError(f"Invokation of '{self.glossaries_bin}' failed")
                 else:
-                    self._logger.debug("Invokation of {bin} successfull".format(bin = self.glossaries_bin))
+                    self._logger.debug(f"Invokation of '{self.glossaries_bin}' successfull")

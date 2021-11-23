@@ -61,15 +61,15 @@ class EnvarPath (LogObj):
 
     def _concatenate(self,
                      i_format : str,
-                     i_item   : Union[str, Path, 'EnvarPath']):
+                     i_item   : Union[str, Path, 'EnvarPath']) -> 'EnvarPath':
         """
         
-        :param i_format: 
-        :param i_item: 
-        :return: 
+        :param i_format: TODO
+        :param i_item:   TODO
+        :return: self
         """
-        assert isinstance(i_format, str)
-        assert isinstance(i_item, (str, Path, EnvarPath))
+        assert isinstance(i_format, str),                  f"type(i_format) is {type(i_format)}"
+        assert isinstance(i_item, (str, Path, EnvarPath)), f"type(i_item) is {type(i_item)}"
 
         if (self._path):
             self._path = i_format.format(separator = os.pathsep,

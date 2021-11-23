@@ -16,7 +16,7 @@ class RequirementsSet (LogObj):
     def __init__(self,
                  i_common    : Optional[CommonSection] = None,
                  i_req_class : Optional[Requirement]   = Requirement):
-        assert isinstance(i_common, CommonSection) or i_common is None
+        assert isinstance(i_common, (CommonSection, type(None))), f"type(i_common) is {type(i_common)}"
         LogObj.__init__(self)
 
         self._req_class = i_req_class
@@ -33,9 +33,9 @@ class RequirementsSet (LogObj):
     def from_xml_element(cls,
                          i_elt    : ETree.Element,
                          i_common : CommonSection):
-        assert isinstance(i_elt,    ETree.Element)
-        assert isinstance(i_common, CommonSection)
-        assert i_elt.tag == cls.TAG_STR
+        assert isinstance(i_elt,    ETree.Element), f"type(i_elt) is {type(i_elt)}"
+        assert isinstance(i_common, CommonSection), f"type(i_common) is {type(i_common)}"
+        assert i_elt.tag == cls.TAG_STR, f"i_elt.tag is <{i_elt.tag}>"
 
         obj = cls(i_common = i_common)
 
@@ -48,21 +48,21 @@ class RequirementsSet (LogObj):
 
     def _walk_xml_add_reqs(self,
                            i_section : ETree.Element):
-        assert isinstance(i_section, ETree.Element)
+        assert isinstance(i_section, ETree.Element), f"type(i_section) is {type(i_section)}"
 
         # TODO save sections
         for e in i_section:
             if   e.tag == self._req_class.TAG_STR:
                 r = self._req_class.from_xml_element(i_elt      = e,
                                                      i_common   = self.common)
-                assert r.id not in self.reqs
+                assert r.id not in self.reqs, f"Duplicate requirement {r.id}"
                 self.reqs[r.id] = r
             elif e.tag == RequirementsSet.SECTION_TAG_STR:
                 self._walk_xml_add_reqs(i_section = e)
 
     def __contains__(self,
                      i_key : Union[str, Requirement]):
-        assert isinstance(i_key, (Requirement, str))
+        assert isinstance(i_key, (Requirement, str)), f"type(i_key) is {type(i_key)}"
 
         if (isinstance(i_key, Requirement)):
             return i_key in self.reqs.values()

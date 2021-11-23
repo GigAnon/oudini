@@ -18,8 +18,8 @@ class Glossary (LogObj):
         @classmethod
         def from_xml_element(cls,
                              i_elt    : ETree.Element):
-            assert isinstance(i_elt, ETree.Element)
-            assert i_elt.tag == cls.TAG_STR
+            assert isinstance(i_elt, ETree.Element), f"type(i_elt) is {type(i_elt)}"
+            assert i_elt.tag == cls.TAG_STR,         f"i_elt.tag = {i_elt.tag}"
 
             obj = cls()
             obj._logger.debug(f"Creating '{cls.__name__}' {obj.uid} from XML")
@@ -94,8 +94,8 @@ class Glossary (LogObj):
     @classmethod
     def from_xml_element(cls,
                          i_elt    : ETree.Element):
-        assert isinstance(i_elt,    ETree.Element)
-        assert i_elt.tag == cls.TAG_STR
+        assert isinstance(i_elt,    ETree.Element), f"type(i_elt) is {type(i_elt)}"
+        assert i_elt.tag == cls.TAG_STR,            f"i_elt.tag = {i_elt.tag}"
 
         obj = cls()
 

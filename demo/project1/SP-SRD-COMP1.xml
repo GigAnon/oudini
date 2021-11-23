@@ -49,9 +49,7 @@
                             \item \textit{DD} is a configuration-specific byte
                         \end{itemize}
                     </text>
-                    <satisfies>
-                        <link id = "SP-PIDS-REQ-20000" source = "SP-PIDS" />
-                    </satisfies>
+                    <satisfies id = "SP-PIDS-REQ-20000" source = "SP-PIDS" />
                 </req>
         </sec>
         <sec name = "input-commands">
@@ -83,9 +81,7 @@
                         \end{enumerate}
                     </text>
                     <validation>T</validation>
-                    <satisfies>
-                        <link id = "SP-PIDS-REQ-10000" source = "SP-PIDS" />
-                    </satisfies>
+                    <satisfies id = "SP-PIDS-REQ-10000" source = "SP-PIDS" />
                 </req>
 
                 <req id        = "80000"

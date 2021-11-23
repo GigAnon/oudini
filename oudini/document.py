@@ -54,7 +54,7 @@ class Document (LogObj):
         :param i_tree: Root of the XML document to parse
         :return      : Created Document object created from the XML
         """
-        assert isinstance(i_tree, ETree.ElementTree)
+        assert isinstance(i_tree, ETree.ElementTree), f"type(i_tree) is {type(i_tree)}"
 
         root = i_tree.getroot()
 
@@ -87,7 +87,8 @@ class Document (LogObj):
                 pass
 
         # Common section is not optional
-        assert obj.common is not None
+        assert obj.common is not None, f"Missing mandatory section <{obj._common_section_class.TAG_STR}>"
+
         # Glossary is optional
 
         # Search for requirements section
@@ -102,7 +103,7 @@ class Document (LogObj):
                 pass
 
         # Requirements section is not optional
-        assert obj.reqs is not None
+        assert obj.reqs is not None, f"Missing mandatory section <{obj._req_set_class.TAG_STR}>"
 
         obj._logger.info("Document [{project}:{document}] successfully parsed ({num_req} requirements found)".format(project  = repr(obj.common.project),
                                                                                                                      document = repr(obj.common.title),
@@ -129,17 +130,17 @@ class Document (LogObj):
             Document._normalize_attr(child)
 
     def __str__(self):
-        s = "%s\n%s\n" % (str(self.common), str(self.reqs))
+        s = f"{self.common!s}\n{self.reqs!s}\n"
 
         if self.glossary:
-            s += "%s" % (str(self.glossary))
+            s += f"{self.glossary!s}"
 
         return s
 
     def __repr__(self):
-        s = "%s\n%s\n" % (repr(self.common), repr(self.reqs))
+        s = f"{self.common!r}\n{self.reqs!r}\n"
 
         if self.glossary:
-            s += "%s" % (repr(self.glossary))
+            s += f"{self.glossary!r}"
 
         return s

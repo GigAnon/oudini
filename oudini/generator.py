@@ -31,8 +31,8 @@ class Generator (LogObj):
         :param i_project_root_dir: Root folder of the project (where to find templates, generate output files, etc.)
         :param i_compiler        : Compiler for the final document from the templates and the snippers
         """
-        assert isinstance(i_project_root_dir, (str, Path))
-        assert isinstance(i_compiler, Compiler) or i_compiler is None
+        assert isinstance(i_project_root_dir, (str, Path)),     f"type(i_project_root_dir) is {type(i_project_root_dir)}"
+        assert isinstance(i_compiler, (Compiler, type(None))),  f"type(i_compiler) is {type(i_compiler)}"
         LogObj.__init__(self)
 
         self.root_dir = Path(i_project_root_dir).resolve()
@@ -89,8 +89,8 @@ class Generator (LogObj):
         :param i_root_folder: Root folder where the snippets files will be generated
         :return: None
         """
-        assert isinstance(i_document,    Document)
-        assert isinstance(i_root_folder, (str, Path))
+        assert isinstance(i_document,    Document),     f"type(i_document) is {type(i_document)}"
+        assert isinstance(i_root_folder, (str, Path)),  f"type(i_root_folder) is {type(i_root_folder)}"
 
         # Convert i_root_folder to pathutils.Path
         if isinstance(i_root_folder, str):
@@ -137,7 +137,8 @@ class Generator (LogObj):
         :param i_out_dir  : Output directory
         :return: None
         """
-        assert isinstance(i_out_dir, (str, Path))
+        assert isinstance(i_document, Document),    f"type(i_document) is {type(i_document)}"
+        assert isinstance(i_out_dir, (str, Path)),  f"type(i_out_dir) is {type(i_out_dir)}"
 
 
         self.generate_document(i_document    = i_document,
