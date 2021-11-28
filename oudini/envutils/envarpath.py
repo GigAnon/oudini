@@ -28,7 +28,7 @@ class EnvarPath (LogObj):
         obj = cls()
         obj._path = os.environ[EnvarPath.PATH_ENVAR_NAME]
 
-        obj._logger.debug(f"Created instance - PATH = '{obj._path}'")
+        obj._d(f"Created instance - PATH = '{obj._path}'")
         return obj
 
     def append(self,
@@ -38,7 +38,7 @@ class EnvarPath (LogObj):
         :param i_item:
         :return:
         """
-        self._logger.debug(f"Appended: '{str(i_item)}'")
+        self._d(f"Appended: '{str(i_item)}'")
         return self._concatenate(i_format = "{path_str}{separator}{item}",
                                  i_item   = str(i_item))
 
@@ -49,7 +49,7 @@ class EnvarPath (LogObj):
         :param i_item:
         :return:
         """
-        self._logger.debug(f"Prepended: '{str(i_item)}'")
+        self._d(f"Prepended: '{str(i_item)}'")
         return self._concatenate(i_format = "{item}{separator}{path_str}",
                                  i_item   = str(i_item))
 

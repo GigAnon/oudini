@@ -25,21 +25,21 @@ class Document (LogObj):
         self._req_set_class         = i_req_set_class
 
     def to_xml(self) -> ETree.ElementTree:
-        self._logger.info(f"Generating XML for document {repr(self.common.title)}")
+        self._i(f"Generating XML for document {repr(self.common.title)}")
 
         assert (self.common is not None)
         assert (self.reqs   is not None)
 
         root = ETree.Element(self.root_name)
 
-        self._logger.debug("Generating XML for common section")
+        self._d("Generating XML for common section")
         root.append(self.common.to_xml())
 
         if self.glossary is not None:
-            self._logger.debug("Generating XML for glossary section")
+            self._d("Generating XML for glossary section")
             root.append(self.glossary.to_xml())
 
-        self._logger.debug("Generating XML for requirements section")
+        self._d("Generating XML for requirements section")
         root.append(self.reqs.to_xml())
 
         ETree.indent(root, space = ' '*4)
@@ -64,7 +64,7 @@ class Document (LogObj):
 
         obj = cls()
 
-        obj._logger.info("Creating document from XML")
+        obj._i("Creating document from XML")
 
         # Read root tag name
         obj.root_name = root.tag
@@ -72,13 +72,13 @@ class Document (LogObj):
         # Search for common section and glossary
         for base in root:
             if      base.tag == obj._common_section_class.TAG_STR:
-                obj._logger.debug(f"Found common section (<{base.tag}>, class '{obj._common_section_class.__name__}')")
+                obj._v(f"Found common section (<{base.tag}>, class '{obj._common_section_class.__name__}')")
 
                 assert obj.common is None
                 obj.common = obj._common_section_class.from_xml_element(i_elt = base)
 
             elif    base.tag == obj._glossary_class.TAG_STR:
-                obj._logger.debug(f"Found glossary section (<{base.tag}>, class '{obj._glossary_class.__name__}')")
+                obj._v(f"Found glossary section (<{base.tag}>, class '{obj._glossary_class.__name__}')")
 
                 assert obj.glossary is None
                 obj.glossary = obj._glossary_class.from_xml_element(i_elt = base)
@@ -94,7 +94,7 @@ class Document (LogObj):
         # Search for requirements section
         for base in root:
             if      base.tag == obj._req_set_class.TAG_STR:
-                obj._logger.debug(f"Found requirements section (<{base.tag}>, class '{obj._req_set_class.__name__}')")
+                obj._d(f"Found requirements section (<{base.tag}>, class '{obj._req_set_class.__name__}')")
                 assert obj.reqs is None
                 obj.reqs = obj._req_set_class.from_xml_element(i_elt    = base,
                                                                i_common = obj.common)
@@ -105,10 +105,10 @@ class Document (LogObj):
         # Requirements section is not optional
         assert obj.reqs is not None, f"Missing mandatory section <{obj._req_set_class.TAG_STR}>"
 
-        obj._logger.info("Document [{project}:{document}] successfully parsed ({num_req} requirements found)".format(project  = repr(obj.common.project),
+        obj._i("Document [{project}:{document}] successfully parsed ({num_req} requirements found)".format(project  = repr(obj.common.project),
                                                                                                                      document = repr(obj.common.title),
                                                                                                                      num_req  = len(obj.reqs.reqs)))
-        obj._logger.debug(repr(obj))
+        obj._d(repr(obj))
 
         return obj
 

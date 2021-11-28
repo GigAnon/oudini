@@ -46,8 +46,8 @@ class MiktexCompiler (Compiler):
         self.pdflatex_env   = envutils.Env(PATH = str(envar_path))
         self.glossaries_env = envutils.Env(PATH = str(envar_path))
 
-        self._logger.info("Created MikTex compiler")
-        self._logger.debug(f"MikTex bin dir : '{self.miktex_bin_dir}'")
+        self._i("Created MikTex compiler")
+        self._d(f"MikTex bin dir : '{self.miktex_bin_dir}'")
 
 
     def run(self,
@@ -61,7 +61,7 @@ class MiktexCompiler (Compiler):
         if isinstance(i_output_dir, str):
             i_output_dir = Path(i_output_dir)
 
-        self._logger.info(f"Running document compilation for [{i_document.common.project!r}:{'TODO'}]")
+        self._w(f"Running document compilation for [{i_document.common.project!r}:{'TODO'}]")
 
         # TODO better system
         LATEX_MAIN_DOC_NAME = "main"
@@ -71,37 +71,37 @@ class MiktexCompiler (Compiler):
         output_tmp_dir      = i_output_dir.joinpath('tmp')
         output_tmp_file     = output_tmp_dir.joinpath(output_filename)
 
-        self._logger.debug(f"Removing f'{output_tmp_dir}'")
+        self._d(f"Removing f'{output_tmp_dir}'")
         shutil.rmtree(path          = output_tmp_dir,
                       ignore_errors = True)
 
-        self._logger.debug(f"Removing '{output_filename}'")
+        self._d(f"Removing '{output_filename}'")
         try:
             output_file.unlink(missing_ok = True)
         except PermissionError:
-            self._logger.error(f"Could not delete '{output_file}'")
+            self._e(f"Could not delete '{output_file}'")
             pass
 
-        self._logger.info(f"[1/3] Running '{self.pdflatex_bin}'")
+        self._i(f"[1/3] Running '{self.pdflatex_bin}'")
         self._invoke_pdflatex(i_latex_folder = i_doc_root_dir,
                               i_temp_folder  = output_tmp_dir,
                               i_docname      = LATEX_MAIN_DOC_NAME)
 
-        self._logger.info(f"[1/1] Running '{self.glossaries_bin}'")
+        self._i(f"[1/1] Running '{self.glossaries_bin}'")
         self._invoke_makeglossaries(i_temp_folder  = output_tmp_dir,
                                     i_docname      = LATEX_MAIN_DOC_NAME)
 
-        self._logger.info(f"[2/3] Running '{self.pdflatex_bin}'")
+        self._i(f"[2/3] Running '{self.pdflatex_bin}'")
         self._invoke_pdflatex(i_latex_folder = i_doc_root_dir,
                               i_temp_folder  = output_tmp_dir,
                               i_docname      = LATEX_MAIN_DOC_NAME)
 
-        self._logger.info(f"[3/3] Running '{self.pdflatex_bin}'")
+        self._i(f"[3/3] Running '{self.pdflatex_bin}'")
         self._invoke_pdflatex(i_latex_folder = i_doc_root_dir,
                               i_temp_folder  = output_tmp_dir,
                               i_docname      = LATEX_MAIN_DOC_NAME)
 
-        self._logger.info(f"Copying '{output_tmp_file}' to '{output_file}'")
+        self._i(f"Copying '{output_tmp_file}' to '{output_file}'")
         shutil.copy(output_tmp_file, output_file)
 
 
@@ -123,8 +123,8 @@ class MiktexCompiler (Compiler):
                             f'{i_docname}.tex',
                         ]
 
-        self._logger.debug(f"Invoking '{self.pdflatex_bin}' in {i_latex_folder}")
-        self._logger.debug(f"Args: {pdflatex_args!r}")
+        self._d(f"Invoking '{self.pdflatex_bin}' in {i_latex_folder}")
+        self._d(f"Args: {pdflatex_args!r}")
 
         # Switch the execution environment for pdflatex
         with self.pdflatex_env.setup(i_cwd = i_latex_folder):
@@ -136,16 +136,16 @@ class MiktexCompiler (Compiler):
                 if proc.returncode:
                     if stdout:
                         stdout = stdout.decode('utf8')
-                        print("\n\n\nSTDOUT: \n%s" % stdout)
+                        self._w(f"STDOUT: \n{stdout}")
 
                     if stderr:
                         stderr = stderr.decode('utf8')
-                        print("\n\n\nSTDERR: \n%s" % stderr)
+                        self._w(f"STDERR: \n{stderr}")
 
-                    self._logger.critical(f"Invokation of '{self.pdflatex_bin}' failed")
+                    self._c(f"Invokation of '{self.pdflatex_bin}' failed")
                     raise RuntimeError(f"Invokation of '{self.pdflatex_bin}' failed")
                 else:
-                    self._logger.debug(f"Invokation of '{self.pdflatex_bin}' successfull")
+                    self._d(f"Invokation of '{self.pdflatex_bin}' successful")
 
 
     def _invoke_makeglossaries(self,
@@ -161,8 +161,8 @@ class MiktexCompiler (Compiler):
                             '-t', 'makeglossaries-lite.log',
                           ]
 
-        self._logger.debug(f"Invoking {self.glossaries_bin} in {i_temp_folder}")
-        self._logger.debug(f"Args: {glossaries_args!r}")
+        self._d(f"Invoking {self.glossaries_bin} in {i_temp_folder}")
+        self._d(f"Args: {glossaries_args!r}")
 
         # Switch the execution environment for pdflatex
         with self.glossaries_env.setup():
@@ -175,13 +175,13 @@ class MiktexCompiler (Compiler):
                 if proc.returncode:
                     if stdout:
                         stdout = stdout.decode('utf8')
-                        print("\n\n\nSTDOUT: \n%s" % stdout)
+                        self._w(f"STOUT: \n{stdout}")
 
                     if stderr:
                         stderr = stderr.decode('utf8')
-                        print("\n\n\nSTDERR: \n%s" % stderr)
+                        self._w(f"STDERR: \n{stderr}")
 
-                    self._logger.critical(f"Invokation of '{self.glossaries_bin}' failed")
+                    self._c(f"Invokation of '{self.glossaries_bin}' failed")
                     raise RuntimeError(f"Invokation of '{self.glossaries_bin}' failed")
                 else:
-                    self._logger.debug(f"Invokation of '{self.glossaries_bin}' successfull")
+                    self._d(f"Invokation of '{self.glossaries_bin}' successful")

@@ -128,7 +128,7 @@ class Requirement (LogObj):
             elif    e.tag == obj.VALIDATION_TAG_STR:
                 obj.validation_strategy = obj.ValidationStrategy(e.text)
             else:
-                obj._logger.warning(f"<{e.tag}> tag ignored")
+                obj._w(f"<{e.tag}> tag ignored")
                 pass # Ignored tag
         return obj
 

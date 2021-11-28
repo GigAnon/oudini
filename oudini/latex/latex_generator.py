@@ -76,7 +76,7 @@ r"""
         self.latex_root_dir = self.root_dir.joinpath('latex')       # TODO constant / improve?
         self.snip_root_dir  = self.latex_root_dir.joinpath('snip') # TODO constant / improve?
 
-        self._logger.info("Created LaTex generator with compiler '%s'" % (type(i_compiler).__name__))
+        self._i("Created LaTex generator with compiler '%s'" % (type(i_compiler).__name__))
 
 
     def _generate_requirement(self,
@@ -106,7 +106,7 @@ r"""
                                                         validation_strategy = validation_strategy)
 
         if i_filename is not None:
-            self._logger.debug("Writing [{req}] into '{file}'".format(req  = i_req.format_id(),
+            self._d("Writing [{req}] into '{file}'".format(req  = i_req.format_id(),
                                                                       file = i_filename.name))
             with open(i_filename, mode = 'w') as file:
                 file.write(text)
@@ -143,7 +143,7 @@ r"""
                                                                   constant_value = LatexGenerator.sanitize(v))
 
         if i_filename is not None:
-            self._logger.debug(f"Writing constants into '{i_filename.name}'")
+            self._d(f"Writing constants into '{i_filename.name}'")
             with open(i_filename, mode = 'w') as file:
                 file.write(text)
 
@@ -174,7 +174,7 @@ r"""
                                                                     acronyms    = acronyms)
 
         if i_filename is not None:
-            self._logger.debug(f"Writing glossary into '{i_filename.name}'")
+            self._d(f"Writing glossary into '{i_filename.name}'")
             with open(i_filename, mode = 'w') as file:
                 file.write(text)
 
@@ -190,7 +190,7 @@ r"""
 
         # If requested, delete the output folder first
         if i_clean_before_run:
-            self._logger.info(f"Deleting '{i_out_dir}'")
+            self._i(f"Deleting '{i_out_dir}'")
             shutil.rmtree(i_out_dir, ignore_errors = True)
 
         # Snippet generation is done in the LaTeX / snip folder

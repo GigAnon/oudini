@@ -22,7 +22,7 @@ class Glossary (LogObj):
             assert i_elt.tag == cls.TAG_STR,         f"i_elt.tag = {i_elt.tag}"
 
             obj = cls()
-            obj._logger.debug(f"Creating '{cls.__name__}' {obj.uid} from XML")
+            obj._d(f"Creating '{cls.__name__}' {obj.uid} from XML")
 
             obj.uid         = i_elt.get(cls.ATTR_UID)
             obj.description = i_elt.text
@@ -109,9 +109,9 @@ class Glossary (LogObj):
                 definition = class_ctor.from_xml_element(e)
                 obj.definitions[definition.uid] = definition
             else:
-                obj._logger.warning(f"Ignoring unknown section <{e.tag}>")
+                obj._w(f"Ignoring unknown section <{e.tag}>")
 
-        obj._logger.info(f"Created glossary ({len(obj.definitions)} definitions) from XML")
+        obj._i(f"Created glossary ({len(obj.definitions)} definitions) from XML")
         return obj
 
     def __str__(self):

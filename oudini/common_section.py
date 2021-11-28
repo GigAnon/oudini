@@ -110,12 +110,12 @@ class CommonSection (LogObj):
                 if      e.tag == cls.PERSON_TAG_STR:
                     obj.list.append(CommonSection.People.Elt(i_name = e.text.strip(),
                                                              i_role = e.get(cls.PERSON_ATTR_ROLE_STR).strip()))
-                    obj._logger.debug(f"Section (<{cls.PERSON_TAG_STR}>) : '{obj.list[-1].name}' ('{obj.list[-1].role}')")
+                    obj._d(f"Section (<{cls.PERSON_TAG_STR}>) : '{obj.list[-1].name}' ('{obj.list[-1].role}')")
                 else:
-                    obj._logger.warning(f"Ignoring unknown section <{e.tag}>")
+                    obj._w(f"Ignoring unknown section <{e.tag}>")
                     pass # Ignored tag
 
-            obj._logger.debug(f"Created from XML : {repr(obj)}")
+            obj._d(f"Created from XML : {repr(obj)}")
 
             return obj
 
@@ -159,36 +159,36 @@ class CommonSection (LogObj):
         assert i_elt.tag == cls.TAG_STR,         f"i_elt.tag is {i_elt.tag}"
 
         obj = cls()
-        obj._logger.debug(f"Instanciating '{cls.__name__}'")
+        obj._d(f"Instanciating '{cls.__name__}'")
 
         for e in i_elt:
             if      e.tag == cls.REQDISPLAYFORMAT_TAG_STR:
-                obj._logger.debug(f"Found requirement display format section (<{cls.REQDISPLAYFORMAT_TAG_STR}>)")
+                obj._v(f"Found requirement display format section (<{cls.REQDISPLAYFORMAT_TAG_STR}>)")
                 obj.req_display_format = e.text
 
             elif    e.tag == cls.REQFILEFORMAT_TAG_STR:
-                obj._logger.debug(f"Found requirement file format section (<{cls.REQFILEFORMAT_TAG_STR}>)")
+                obj._v(f"Found requirement file format section (<{cls.REQFILEFORMAT_TAG_STR}>)")
                 obj.req_file_format = e.text
 
             elif    e.tag == cls.Project.TAG_STR:
-                obj._logger.debug(f"Found project info section (<{cls.Project.TAG_STR}>)")
+                obj._v(f"Found project info section (<{cls.Project.TAG_STR}>)")
                 obj.project = cls.Project.from_xml_element(e)
-                obj._logger.debug(repr(obj.project))
+                obj._s(repr(obj.project))
 
             elif    e.tag == cls.Title.TAG_STR:
-                obj._logger.debug(f"Found document title info section (<{cls.Title.TAG_STR}>)")
+                obj._v(f"Found document title info section (<{cls.Title.TAG_STR}>)")
                 obj.title = cls.Title.from_xml_element(e)
-                obj._logger.debug(repr(obj.title))
+                obj._s(repr(obj.title))
 
             elif    e.tag == cls.People.TAG_STR:
-                obj._logger.debug(f"Found people info section (<{cls.People.TAG_STR}>)")
+                obj._v(f"Found people info section (<{cls.People.TAG_STR}>)")
                 obj.people = cls.People.from_xml_element(e)
 
             else:
-                obj._logger.warning(f"Ignoring unknown section <{e.tag}>")
+                obj._w(f"Ignoring unknown section <{e.tag}>")
                 pass # Ignored tag
 
-        obj._logger.debug(f"Created from XML : {obj!r}")
+        obj._d(f"Created from XML : {obj!r}")
 
         return obj
 

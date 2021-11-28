@@ -42,7 +42,7 @@ class RequirementsSet (LogObj):
         # Recursively walk through sections to flatten out the requirements
         # (depth should be reasonable)
         obj._walk_xml_add_reqs(i_section = i_elt)
-        obj._logger.debug(f"Created from XML ({len(obj.reqs)} reqs)")
+        obj._d(f"Created from XML ({len(obj.reqs)} reqs)")
 
         return obj
 

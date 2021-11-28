@@ -21,9 +21,9 @@ class Env (LogObj):
         self._remove = remove
         self._update = update
 
-        self._logger.debug("Initialised environment:")
-        self._logger.debug("  DELETED ENVARS        %s" % (repr(self._remove)))
-        self._logger.debug("  ADDED/MODIFIED ENVARS %s" % (repr(self._update)))
+        self._d("Initialised environment:")
+        self._v("  DELETED ENVARS        %s" % (repr(self._remove)))
+        self._v("  ADDED/MODIFIED ENVARS %s" % (repr(self._update)))
 
     @contextlib.contextmanager
     def setup(self,
@@ -52,16 +52,16 @@ class Env (LogObj):
             env.update(update)
             [env.pop(k, None) for k in remove]
 
-            self._logger.info("Setting up environment")
-            self._logger.debug(env)
+            self._i("Setting up environment")
+            self._d(env)
 
             if i_cwd is not None:
                 os.chdir(str(i_cwd))
-                self._logger.debug(f"CWD : {i_cwd!r}")
+                self._d(f"CWD : {i_cwd!r}")
 
             yield
         finally:
-            self._logger.info("Reseting environment")
+            self._i("Reseting environment")
             env.update(update_after)
             [env.pop(k) for k in remove_after]
 

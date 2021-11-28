@@ -96,35 +96,35 @@ class Generator (LogObj):
         if isinstance(i_root_folder, str):
             i_root_folder = Path(i_root_folder)
 
-        self._logger.info("Generating document [{project}:{doc}] into '{root_folder}'".format(project     = repr(i_document.common.project),
-                                                                                              doc         = "TODO",
-                                                                                              root_folder = i_root_folder))
+        self._w("Generating document [{project}:{doc}] into '{root_folder}'".format(project     = repr(i_document.common.project),
+                                                                                    doc         = "TODO",
+                                                                                    root_folder = i_root_folder))
 
         # Create the output folder, if it doesn't already exist
-        self._logger.debug("Deleting '%s'" % (i_root_folder))
+        self._d("Deleting '%s'" % (i_root_folder))
         os.makedirs(i_root_folder, exist_ok = True)
 
         # Generate the requirements
         for _, req in i_document.reqs.reqs.items():
-            self._logger.debug("Generating [%s]" % (str(req)))
+            self._d("Generating [%s]" % (str(req)))
             self._generate_requirement(i_req      = req,
                                        i_filename = req.get_snippet_filename(i_root_folder     = i_root_folder,
                                                                              i_fallback_format = self.DEFAULT_REQ_FILE_FORMAT))
 
         # Export the document constants
-        self._logger.debug("Generating constants")
+        self._d("Generating constants")
         self._generate_constants(i_common   = i_document.common,
                                  i_filename = i_document.common.get_constants_snippet_filename(i_root_folder     = i_root_folder,
                                                                                                i_fallback_format = self.DEFAULT_CONSTANTS_FILE_FORMAT))
 
         # If present: export the glossary
         if i_document.glossary is not None:
-            self._logger.debug("Generating glossary")
+            self._d("Generating glossary")
             self._generate_glossary(i_glossary = i_document.glossary,
                                     i_filename = i_document.common.get_constants_snippet_filename(i_root_folder     = i_root_folder,
                                                                                                   i_fallback_format = self.DEFAULT_GLOSSARY_FILE_FORMAT))
 
-        self._logger.info("Done generating [{project}:{doc}]".format(project = repr(i_document.common.project),
+        self._i("Done generating [{project}:{doc}]".format(project = repr(i_document.common.project),
                                                                      doc     = "TODO"))
 
     def generate_and_compile(self,
