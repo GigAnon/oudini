@@ -271,10 +271,7 @@ class ThreadedLogObj (LogObj, Thread, abc.ABC):
 
         try:
             self.sub_run()
+            self._i(f"Exiting thread {self.name} [{self.ident}]")
         finally:
             self._cleanup()
-
-        self._i(f"Exiting thread {self.name} [{self.ident}]")
-
-
 
