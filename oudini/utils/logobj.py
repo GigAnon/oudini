@@ -1,11 +1,14 @@
 #! python3
-import copy
+import  copy
+import threading
 from    enum    import Enum
 import  logging
 import  inspect
 import  traceback
 import  sys
-from    typing  import Optional, Union
+import  abc
+from    typing    import Optional, Union
+from    threading import Thread, get_ident
 
 
 class LogLevel (Enum):
@@ -29,6 +32,7 @@ class LogLevel (Enum):
     WARN = WARNING
     DEB  = DEBUG
     VER  = VERBOSE
+    ALL  = logging.NOTSET
 
 
 logging.addLevelName(level     = LogLevel.VERBOSE.value,
@@ -181,5 +185,96 @@ class LogObj:
     def _s(self, msg, *args, **kwargs):
         self.__log(level = LogLevel.SPAM,
                    msg   = msg, *args, **kwargs)
+
+
+class ThreadedLogObj (LogObj, Thread, abc.ABC):
+    class Filter (logging.Filter):
+        def __init__(self,
+                     i_thread_id = None):
+            super().__init__()
+            self.thread_id = i_thread_id
+
+        def filter(self, record: logging.LogRecord) -> bool:
+            return record.thread == self.thread_id
+
+        @classmethod
+        def filter_main_thread(cls):
+            return cls(i_thread_id = threading.main_thread().ident)
+
+
+    def __init__(self,
+                 i_thread_log_hdlrs : Union[list[logging.Handler],
+                                            logging.Handler,
+                                            type(None)]             = None,
+                 i_owns_hdlrs       : bool = True,
+                 i_logger_name      : Optional[str]                 = None):
+        """
+        Constructor.
+
+        :param i_thread_log_hdlrs : Log handler, or set of log handler to be set exclusively for this thread.
+        :param i_owns_hdlrs       : If set to True, the object will take ownership of the handlers it was given (cleanup, etc.)
+        :param i_logger_name      : Override logger name - see LogObj.__init__
+        """
+        Thread.__init__(self)
+        LogObj.__init__(self, i_logger_name = i_logger_name)
+
+        assert isinstance(i_owns_hdlrs,       bool)
+        assert isinstance(i_thread_log_hdlrs, (logging.Handler,
+                                               list,
+                                               type(None))), f"type(i_thread_log_hdlrs) = {type(i_thread_log_hdlrs)}"
+
+        # Note : only the list is copied, not the handlers themselves
+        if      isinstance(i_thread_log_hdlrs, logging.Handler):
+            self._log_hdlrs = [ i_thread_log_hdlrs ]
+        elif    isinstance(i_thread_log_hdlrs, list):
+            self._log_hdlrs = copy.deepcopy(i_thread_log_hdlrs)
+        else:
+            self._log_hdlrs = []
+
+        self._owns_hdlrs = i_owns_hdlrs # Just a coincidence, but I love this parameter name :D
+
+        # Note : this filter will suppress all output on handlers until the thread is started
+        self._filter = self.Filter()
+
+        for h in self._log_hdlrs:
+            assert isinstance(h, logging.Handler)
+            h.addFilter(self._filter)
+
+
+    def _initialize(self):
+        # TODO thread exception hook?
+
+        # Un-suppress the handlers, and start filtering based on thread ID
+        self._filter.thread_id = get_ident()
+
+    def _cleanup(self):
+        if self._owns_hdlrs:
+            # Remove handlers from logging system
+
+            if len(self._log_hdlrs):
+                self._v(f"Removing {len(self._log_hdlrs)} handlers from logging system")
+
+            for h in self._log_hdlrs:
+                self._s(f"Removing handler {h}")
+                h.flush()
+                logging.getLogger().removeHandler(h)
+                h.close()
+
+    @abc.abstractmethod
+    def sub_run(self):
+        raise NotImplementedError()
+
+    def run(self):
+        self._initialize()
+
+        self._i(f"Starting thread {self.name} [{self.ident}]")
+
+        try:
+            self.sub_run()
+        finally:
+            self._cleanup()
+
+        self._i(f"Exiting thread {self.name} [{self.ident}]")
+
 
 
