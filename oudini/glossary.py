@@ -79,15 +79,15 @@ class Glossary (LogObj):
 
     def __init__(self):
         LogObj.__init__(self)
-        self.definitions = {}
+        self.definitions = []
 
     def to_xml(self) -> ETree.Element:
         root = ETree.Element(self.TAG_STR)
 
         root.text = ' ' # To prevent the generator from generating an empty tag <glossary />
 
-        for k, v in self.definitions.items():
-            root.append(v.to_xml())
+        for d in self.definitions:
+            root.append(d.to_xml())
 
         return root
 
@@ -107,7 +107,11 @@ class Glossary (LogObj):
 
             if class_ctor is not None:
                 definition = class_ctor.from_xml_element(e)
-                obj.definitions[definition.uid] = definition
+
+                # TODO: proper exception
+                assert not any(definition.uid == d.uid for d in obj.definitions), f"Duplicate definition {definition.uid}"
+
+                obj.definitions.append(definition)
             else:
                 obj._w(f"Ignoring unknown section <{e.tag}>")
 
@@ -121,4 +125,4 @@ class Glossary (LogObj):
         return f"{self.definitions!r}"
 
     def __iter__(self):
-        return iter(self.definitions.items())
+        return iter(self.definitions)

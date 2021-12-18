@@ -159,7 +159,7 @@ r"""
 
         acronyms    = ""
         definitions = ""
-        for a in i_glossary.definitions.values():
+        for a in i_glossary.definitions:
             assert isinstance(a, Glossary.Definition), f"type(a) is {type(a)}"
 
             if isinstance(a, Glossary.Acronym):
