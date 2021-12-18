@@ -1,17 +1,29 @@
 #! python3
+
+# Developed by GigAnon for the Oudini project. All rights reserved.
+# https://github.com/GigAnon/oudini
+#
+# Distributed under MIT (Expat) License, see LICENSE.
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
 import  copy
-import threading
-from    enum    import Enum
+import  threading
+from    enum        import Enum
 import  logging
 import  inspect
 import  traceback
 import  sys
 import  abc
-from    typing    import Optional, Union
-from    threading import Thread, get_ident
+from    typing      import Optional, Union
+from    threading   import Thread, get_ident
 
 
 class LogLevel (Enum):
+    """
+        Enumeration overlay over levels from logging module.
+        Provides stronger type-checking, extends the default levels, and provides aliases.
+    """
     CRITICAL = logging.CRITICAL     # "HELP the script exploded" level
     ERROR    = logging.ERROR
     WARNING  = logging.WARNING
@@ -34,7 +46,7 @@ class LogLevel (Enum):
     VER  = VERBOSE
     ALL  = logging.NOTSET
 
-
+# Add the VERBOSE and SPAM levels to logging system
 logging.addLevelName(level     = LogLevel.VERBOSE.value,
                      levelName = "VERBOSE")
 logging.addLevelName(level     = LogLevel.SPAM.value,
@@ -81,7 +93,15 @@ def enable_exception_logging():
 def simple_setup(handlers                : list[Union[logging.Handler, tuple]],
                  default_level           : LogLevel                    = LogLevel.INFO,
                  default_formater        : Optional[logging.Formatter] = None,
-                 log_uncaught_exceptions : bool                        = True):
+                 log_uncaught_exceptions : bool                        = True) -> logging.Logger:
+    """
+
+    :param handlers                 :
+    :param default_level            : (optional) Set the logging level to be be applied to handlers (if none was given)
+    :param default_formater         : (optional) Set the log formater to be applied to handlers (if none was given)
+    :param log_uncaught_exceptions  : If set to True (default), replace sys.excepthook to
+    :return:
+    """
     assert isinstance(default_level,            (LogLevel))
     assert isinstance(default_formater,         (logging.Formatter, type(None)))
     assert isinstance(log_uncaught_exceptions,  bool)
@@ -116,11 +136,69 @@ def simple_setup(handlers                : list[Union[logging.Handler, tuple]],
         hh[0].setFormatter(hh[2])
         root.addHandler(hh[0])
 
+    return root
+
 
 
 class LogObj:
+    """
+        Convenient object wrapper around default Python logging system.
+
+        LogObj is designed around user convenience. TODO
+
+        This class provides:
+            - 'smart' logger name attribution to simplify filtering in large projects
+            - Convenient shorthands for logging messages from within a class
+
+        Unless overriden, the name of the logger will be constructed with the following format:
+            {__name__}-{class name}
+        Where:
+            - {__name__} is the value of the Python __name__ variable in the context where LogObj.__init__ was called
+                __name__ contains the module name, generally as found in the "import" statement (path.to.my.module.toto).
+            - {class name} is type(self).__name__
+
+        This naming scheme should allow easy filtering of loggers in modules by their names. For the following structure:
+        | main.py
+        |   | class M1
+        | - module1
+        |   | - A.py
+        |   |   | class A1
+        |   |   | class A2
+        |   |   | module1a
+        |   |   | - C.py
+        |   |   |   | class C1
+        | - module2
+        |   | - B.py
+        |   |   | class B1
+        | etc.
+
+        The following loggers would be created:
+            __main__.M1
+            module1-A1
+            module1-A2
+            module1.module1a-C1
+            module2-B1
+            etc.
+
+        Changing the verbosity level of all 'module1' and its submodules then becomes as easy as calling:
+            logging.getLogger('module1').setLevel(...)
+
+
+    """
+
     def __init__(self,
-                 i_logger_name  : Optional[str] = None):
+                 i_logger_name      : Optional[str] = None,
+                 i_smart_multilines : bool = True):
+        """
+            Constructor.
+        :param i_logger_name     : Overrides the name to be used for the logger.
+                                   If not set, a (decently unique) name will be created based class name and __name__.
+        :param i_smart_multilines: If set to True (default), splits multi-line log messages.
+        """
+        assert isinstance(i_smart_multilines, bool), f"type(i_smart_multilines) = {type(i_smart_multilines)}"
+
+        self.smart_multilines = i_smart_multilines
+
         if i_logger_name is not None:
             assert isinstance(i_logger_name, str), f"type(i_logger_name) is {type(i_logger_name)}"
 
@@ -134,6 +212,7 @@ class LogObj:
                 # If invoked from a constructor, inspect the callstack to get __name__ from the call site
                 # This way, the logger name will be prefixed by the name of the module being used, and not whatever module
                 # this file ends up in.
+                # TODO : recursively inspect stack to find the first __init__, to improve behaviour on multiple inheritance?
                 callsite = inspect.stack()[1]
                 if "__init__" in callsite.function:
                     module = inspect.getmodule(callsite[0])
@@ -143,7 +222,6 @@ class LogObj:
 
             # If all else file, use the current __name__
             caller_name = caller_name if caller_name is not None else __name__
-
             logger_name = f"{caller_name}-{type(self).__name__}"
 
         self._logger = logging.getLogger(logger_name)
@@ -152,37 +230,70 @@ class LogObj:
               msg,
               level : LogLevel,
               *args, **kwargs):
-        _multiline_log(self._logger,
-                       msg        = msg,
-                       level      = level,
-                       stacklevel = 4,
-                       *args, **kwargs)
+        """
+            Internal method.
+            Log msg with the given log level into the internal logger.
+            If smart_multilines is set, msg will be split into separate messages along '\n' characters.
+
+        :param msg      : Message to be logged
+        :param level    : Verbosity level
+        :return:
+        """
+        if self.smart_multilines:
+            _multiline_log(self._logger,
+                           msg        = msg,
+                           level      = level,
+                           stacklevel = 4,
+                           *args, **kwargs)
+        else:
+            self._logger.log(level = level.value, msg = msg, stacklevel = 3, *args, **kwargs)
 
     def _c(self, msg, *args, **kwargs):
+        """
+            Log a CRITICAL message into internal logger.
+        """
         self.__log(level = LogLevel.CRITICAL,
                    msg   = msg, *args, **kwargs)
 
     def _e(self, msg, *args, **kwargs):
+        """
+            Log an ERROR message into internal logger.
+        """
         self.__log(level = LogLevel.ERROR,
                    msg   = msg, *args, **kwargs)
 
     def _w(self, msg, *args, **kwargs):
+        """
+            Log a WARNING message into internal logger.
+        """
         self.__log(level = LogLevel.WARNING,
                    msg   = msg, *args, **kwargs)
 
     def _i(self, msg, *args, **kwargs):
+        """
+            Log an INFO message into internal logger.
+        """
         self.__log(level = LogLevel.INFO,
                    msg   = msg, *args, **kwargs)
 
     def _d(self, msg, *args, **kwargs):
+        """
+            Log a DEBUG message into internal logger.
+        """
         self.__log(level = LogLevel.DEBUG,
                    msg   = msg, *args, **kwargs)
 
     def _v(self, msg, *args, **kwargs):
+        """
+            Log a VERBOSE message into internal logger.
+        """
         self.__log(level = LogLevel.VERBOSE,
                    msg   = msg, *args, **kwargs)
 
     def _s(self, msg, *args, **kwargs):
+        """
+            Log a SPAM message into internal logger.
+        """
         self.__log(level = LogLevel.SPAM,
                    msg   = msg, *args, **kwargs)
 

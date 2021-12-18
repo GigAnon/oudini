@@ -59,7 +59,7 @@ handlers = [ logging.StreamHandler(),
 th = []
 
 for i in range(0, 4):
-    h = logging.FileHandler(filename = f"{LOG_DIR}/test{i}.log",
+    h = logging.FileHandler(filename = f"{LOG_DIR}/test{i + 1}.log",
                             mode     = "w")
 
     handlers.append(h)
